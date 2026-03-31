@@ -41,14 +41,40 @@ body{font-family:'Syne',sans-serif;background:var(--bg);color:var(--text);min-he
 ::-webkit-scrollbar-thumb:hover{background:var(--muted)}
 
 /* AUTH SCREEN */
-#auth-screen{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:9999;padding:20px}
-.auth-box{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:48px 40px;width:100%;max-width:420px;position:relative;overflow:hidden}
-.auth-box::before{content:'';position:absolute;top:-80px;right:-80px;width:200px;height:200px;background:radial-gradient(circle,rgba(249,115,22,0.15),transparent 70%);pointer-events:none}
-.auth-logo{display:flex;align-items:center;gap:12px;margin-bottom:32px}
-.auth-logo .icon{width:44px;height:44px;background:linear-gradient(135deg,var(--accent),#ef4444);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px}
-.auth-logo h1{font-size:24px;font-weight:800;letter-spacing:-0.5px}
+#auth-screen{position:fixed;inset:0;background:
+  radial-gradient(circle at 20% 20%, rgba(249,115,22,0.10), transparent 28%),
+  radial-gradient(circle at 85% 18%, rgba(96,165,250,0.08), transparent 24%),
+  radial-gradient(circle at 50% 110%, rgba(34,197,94,0.08), transparent 30%),
+  var(--bg);
+  display:flex;align-items:center;justify-content:center;z-index:9999;padding:24px;overflow:auto}
+.auth-shell{width:100%;max-width:1120px;display:grid;grid-template-columns:1.1fr 0.9fr;gap:24px;align-items:stretch;position:relative}
+.auth-shell::before{content:'';position:absolute;inset:-10px;background:linear-gradient(135deg, rgba(249,115,22,0.08), rgba(96,165,250,0.06));filter:blur(40px);z-index:0;pointer-events:none}
+.auth-hero,.auth-box{position:relative;z-index:1}
+.auth-hero{background:
+  linear-gradient(180deg, rgba(20,22,31,0.92), rgba(15,17,23,0.96)),
+  radial-gradient(circle at top right, rgba(249,115,22,0.18), transparent 35%);
+  border:1px solid var(--border);border-radius:24px;padding:40px;display:flex;flex-direction:column;justify-content:space-between;min-height:640px;overflow:hidden}
+.auth-hero::after{content:'';position:absolute;inset:auto -80px -80px auto;width:220px;height:220px;border-radius:50%;background:radial-gradient(circle, rgba(96,165,250,0.12), transparent 68%);pointer-events:none}
+.auth-kicker{display:inline-flex;align-items:center;gap:8px;width:max-content;padding:8px 12px;border:1px solid rgba(249,115,22,0.25);background:rgba(249,115,22,0.08);border-radius:999px;color:var(--accent2);font-size:12px;font-weight:700;letter-spacing:0.5px;text-transform:uppercase}
+.auth-hero h2{font-size:44px;line-height:1.02;letter-spacing:-1.8px;margin:18px 0 14px;font-weight:800;max-width:14ch}
+.auth-hero h2 span{color:var(--accent)}
+.auth-hero p{max-width:52ch;color:var(--muted2);font-size:15px;line-height:1.7}
+.hero-points{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:28px}
+.hero-point{background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:16px;padding:14px 14px 14px 16px;min-height:88px}
+.hero-point strong{display:block;font-size:13px;margin-bottom:6px}
+.hero-point span{color:var(--muted2);font-size:12px;line-height:1.5}
+.hero-metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:24px}
+.metric-pill{background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:16px;padding:14px 16px}
+.metric-pill .num{display:block;font-size:20px;font-weight:800;letter-spacing:-0.5px}
+.metric-pill .label{display:block;font-size:11px;color:var(--muted2);margin-top:4px;text-transform:uppercase;letter-spacing:1px}
+.auth-box{background:rgba(20,22,31,0.96);backdrop-filter:blur(18px);border:1px solid var(--border);border-radius:24px;padding:48px 40px;width:100%;max-width:none;position:relative;overflow:hidden;align-self:center;box-shadow:0 24px 80px rgba(0,0,0,0.35)}
+.auth-box::before{content:'';position:absolute;top:-80px;right:-80px;width:200px;height:200px;background:radial-gradient(circle,rgba(249,115,22,0.18),transparent 70%);pointer-events:none}
+.auth-logo{display:flex;align-items:center;gap:12px;margin-bottom:24px}
+.auth-logo .icon{width:46px;height:46px;background:linear-gradient(135deg,var(--accent),#ef4444);border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:22px;box-shadow:0 10px 24px rgba(249,115,22,0.25)}
+.auth-logo h1{font-size:26px;font-weight:800;letter-spacing:-0.6px}
 .auth-logo h1 span{color:var(--accent)}
-.auth-tab{display:flex;background:var(--surface);border-radius:10px;padding:4px;margin-bottom:28px;gap:4px}
+.auth-sub{color:var(--muted2);font-size:13px;line-height:1.6;margin-bottom:22px}
+.auth-tab{display:flex;background:var(--surface);border-radius:12px;padding:4px;margin-bottom:24px;gap:4px}
 .auth-tab button{flex:1;padding:8px;border:none;background:none;color:var(--muted);font-family:'Syne',sans-serif;font-size:14px;font-weight:600;border-radius:7px;cursor:pointer;transition:all 0.2s}
 .auth-tab button.active{background:var(--card2);color:var(--text)}
 .auth-form{display:flex;flex-direction:column;gap:16px}
@@ -60,6 +86,8 @@ body{font-family:'Syne',sans-serif;background:var(--bg);color:var(--text);min-he
 .btn-primary:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(249,115,22,0.3)}
 .btn-primary:active{transform:translateY(0)}
 .auth-error{background:rgba(248,113,113,0.1);border:1px solid rgba(248,113,113,0.3);border-radius:8px;padding:10px 14px;font-size:13px;color:var(--red);display:none}
+.auth-footer{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:18px;padding-top:16px;border-top:1px solid var(--border);color:var(--muted2);font-size:12px}
+.auth-footer a{color:var(--accent2);text-decoration:none;font-weight:700}
 
 /* MAIN APP */
 #app{display:none;height:100vh;overflow:hidden}
@@ -278,6 +306,8 @@ body{font-family:'Syne',sans-serif;background:var(--bg);color:var(--text);min-he
   .grid-2,.grid-3,.grid-4{grid-template-columns:1fr}
   .form-row{grid-template-columns:1fr}
   .page-header h1{font-size:22px}
+  .auth-shell{grid-template-columns:1fr}
+  .auth-hero{display:none}
   .auth-box{padding:32px 24px}
 }
 @media(min-width:769px){
@@ -325,42 +355,83 @@ body.light .mobile-header{background:#ffffff}
 
 <!-- AUTH SCREEN -->
 <div id="auth-screen">
-  <div class="auth-box">
-    <div class="auth-logo">
-      <div class="icon">⚡</div>
-      <h1>Focus<span>Forge</span></h1>
-    </div>
-    <div class="auth-tab">
-      <button class="active" onclick="switchAuth('login')">Sign In</button>
-      <button onclick="switchAuth('signup')">Sign Up</button>
-    </div>
-    <div class="auth-error" id="auth-error"></div>
-    <div class="auth-form" id="login-form">
-      <div class="form-group">
-        <label>Email</label>
-        <input type="email" id="login-email" placeholder="you@example.com" autocomplete="email"/>
+  <div class="auth-shell">
+    <section class="auth-hero">
+      <div>
+        <div class="auth-kicker">20-day discipline system</div>
+        <h2>Build momentum. <span>Stay locked in.</span></h2>
+        <p>
+          FocusForge turns your daily work into a structured system for DSA, Spring Boot,
+          academics, health, and communication. Track progress, keep streaks alive, and
+          see your consistency at a glance.
+        </p>
+        <div class="hero-points">
+          <div class="hero-point">
+            <strong>Daily plan</strong>
+            <span>Automatically generated 20-day routines with morning, college, evening, and night blocks.</span>
+          </div>
+          <div class="hero-point">
+            <strong>Real progress</strong>
+            <span>Save tasks, streaks, health habits, and problem-solving history in MongoDB.</span>
+          </div>
+          <div class="hero-point">
+            <strong>Focus mode</strong>
+            <span>Use the built-in Pomodoro and distraction controls when you need deep work.</span>
+          </div>
+          <div class="hero-point">
+            <strong>Weekly clarity</strong>
+            <span>Review charts, calendar heatmaps, and completion rates without leaving the app.</span>
+          </div>
+        </div>
       </div>
-      <div class="form-group">
-        <label>Password</label>
-        <input type="password" id="login-pass" placeholder="••••••••" autocomplete="current-password"/>
+      <div class="hero-metrics">
+        <div class="metric-pill"><span class="num">20</span><span class="label">day sprint</span></div>
+        <div class="metric-pill"><span class="num">6</span><span class="label">focus tracks</span></div>
+        <div class="metric-pill"><span class="num">1</span><span class="label">dashboard</span></div>
       </div>
-      <button class="btn-primary" onclick="handleLogin()">Enter FocusForge ⚡</button>
-      <p style="text-align:center;font-size:12px;color:var(--muted);margin-top:4px">Demo: use any email + password (6+ chars)</p>
-    </div>
-    <div class="auth-form" id="signup-form" style="display:none">
-      <div class="form-group">
-        <label>Full Name</label>
-        <input type="text" id="signup-name" placeholder="Om Kumar"/>
+    </section>
+    <div class="auth-box">
+      <div class="auth-logo">
+        <div class="icon">⚡</div>
+        <h1>Focus<span>Forge</span></h1>
       </div>
-      <div class="form-group">
-        <label>Email</label>
-        <input type="email" id="signup-email" placeholder="you@example.com"/>
+      <div class="auth-sub">A focused workspace for students who want a cleaner system and measurable progress.</div>
+      <div class="auth-tab">
+        <button class="active" onclick="switchAuth('login')">Sign In</button>
+        <button onclick="switchAuth('signup')">Sign Up</button>
       </div>
-      <div class="form-group">
-        <label>Password</label>
-        <input type="password" id="signup-pass" placeholder="Min 6 characters"/>
+      <div class="auth-error" id="auth-error"></div>
+      <div class="auth-form" id="login-form">
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" id="login-email" placeholder="you@example.com" autocomplete="email"/>
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" id="login-pass" placeholder="••••••••" autocomplete="current-password"/>
+        </div>
+        <button class="btn-primary" onclick="handleLogin()">Enter FocusForge ⚡</button>
+        <p style="text-align:center;font-size:12px;color:var(--muted);margin-top:4px">Demo: use any email + password (6+ chars)</p>
       </div>
-      <button class="btn-primary" onclick="handleSignup()">Start My 20-Day Journey 🚀</button>
+      <div class="auth-form" id="signup-form" style="display:none">
+        <div class="form-group">
+          <label>Full Name</label>
+          <input type="text" id="signup-name" placeholder="Om Kumar"/>
+        </div>
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" id="signup-email" placeholder="you@example.com"/>
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" id="signup-pass" placeholder="Min 6 characters"/>
+        </div>
+        <button class="btn-primary" onclick="handleSignup()">Start My 20-Day Journey 🚀</button>
+      </div>
+      <div class="auth-footer">
+        <span>Protected by MongoDB Atlas + JWT</span>
+        <a href="#login-form" onclick="switchAuth('login')">Jump to sign in</a>
+      </div>
     </div>
   </div>
 </div>
