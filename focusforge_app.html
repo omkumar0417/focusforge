@@ -1,0 +1,2253 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>FocusForge — Your 20-Day Discipline System</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+:root {
+  --bg: #09090f;
+  --surface: #0f1117;
+  --card: #14161f;
+  --card2: #1a1d28;
+  --border: #22263a;
+  --accent: #f97316;
+  --accent2: #fb923c;
+  --gold: #f59e0b;
+  --green: #22c55e;
+  --blue: #60a5fa;
+  --purple: #a78bfa;
+  --red: #f87171;
+  --cyan: #22d3ee;
+  --text: #e2e8f0;
+  --muted: #64748b;
+  --muted2: #94a3b8;
+  --sidebar: 260px;
+  --radius: 14px;
+  --radius-sm: 8px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:'Syne',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+.mono{font-family:'JetBrains Mono',monospace}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:var(--surface)}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:10px}
+::-webkit-scrollbar-thumb:hover{background:var(--muted)}
+
+/* AUTH SCREEN */
+#auth-screen{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:9999;padding:20px}
+.auth-box{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:48px 40px;width:100%;max-width:420px;position:relative;overflow:hidden}
+.auth-box::before{content:'';position:absolute;top:-80px;right:-80px;width:200px;height:200px;background:radial-gradient(circle,rgba(249,115,22,0.15),transparent 70%);pointer-events:none}
+.auth-logo{display:flex;align-items:center;gap:12px;margin-bottom:32px}
+.auth-logo .icon{width:44px;height:44px;background:linear-gradient(135deg,var(--accent),#ef4444);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px}
+.auth-logo h1{font-size:24px;font-weight:800;letter-spacing:-0.5px}
+.auth-logo h1 span{color:var(--accent)}
+.auth-tab{display:flex;background:var(--surface);border-radius:10px;padding:4px;margin-bottom:28px;gap:4px}
+.auth-tab button{flex:1;padding:8px;border:none;background:none;color:var(--muted);font-family:'Syne',sans-serif;font-size:14px;font-weight:600;border-radius:7px;cursor:pointer;transition:all 0.2s}
+.auth-tab button.active{background:var(--card2);color:var(--text)}
+.auth-form{display:flex;flex-direction:column;gap:16px}
+.form-group{display:flex;flex-direction:column;gap:6px}
+.form-group label{font-size:13px;font-weight:600;color:var(--muted2)}
+.form-group input{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 16px;color:var(--text);font-family:'Syne',sans-serif;font-size:14px;outline:none;transition:border-color 0.2s}
+.form-group input:focus{border-color:var(--accent)}
+.btn-primary{background:linear-gradient(135deg,var(--accent),#ef4444);border:none;border-radius:10px;padding:13px;color:#fff;font-family:'Syne',sans-serif;font-size:15px;font-weight:700;cursor:pointer;transition:all 0.2s;margin-top:4px}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(249,115,22,0.3)}
+.btn-primary:active{transform:translateY(0)}
+.auth-error{background:rgba(248,113,113,0.1);border:1px solid rgba(248,113,113,0.3);border-radius:8px;padding:10px 14px;font-size:13px;color:var(--red);display:none}
+
+/* MAIN APP */
+#app{display:none;height:100vh;overflow:hidden}
+.layout{display:flex;height:100vh}
+
+/* SIDEBAR */
+.sidebar{width:var(--sidebar);background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;padding:20px 0;flex-shrink:0;position:relative;z-index:100;transition:transform 0.3s}
+.sidebar-logo{padding:0 20px 24px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border)}
+.sidebar-logo .icon{width:36px;height:36px;background:linear-gradient(135deg,var(--accent),#ef4444);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.sidebar-logo h2{font-size:18px;font-weight:800;letter-spacing:-0.3px}
+.sidebar-logo h2 span{color:var(--accent)}
+.sidebar-user{padding:16px 20px;border-bottom:1px solid var(--border)}
+.user-info{display:flex;align-items:center;gap:10px}
+.user-avatar{width:36px;height:36px;background:linear-gradient(135deg,var(--purple),var(--blue));border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;flex-shrink:0}
+.user-name{font-size:13px;font-weight:700;line-height:1.2}
+.user-streak{font-size:11px;color:var(--accent);font-weight:600}
+.sidebar-nav{padding:16px 12px;flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:2px}
+.nav-section-label{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;padding:10px 8px 6px}
+.nav-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;cursor:pointer;transition:all 0.15s;color:var(--muted2);font-size:13px;font-weight:600;border:none;background:none;width:100%;text-align:left}
+.nav-item:hover{background:var(--card2);color:var(--text)}
+.nav-item.active{background:rgba(249,115,22,0.12);color:var(--accent)}
+.nav-item .icon{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;background:var(--card)}
+.nav-item.active .icon{background:rgba(249,115,22,0.2)}
+.sidebar-footer{padding:16px 12px;border-top:1px solid var(--border)}
+.theme-toggle{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;cursor:pointer;color:var(--muted2);font-size:13px;font-weight:600;border:none;background:none;width:100%;text-align:left;transition:all 0.15s}
+.theme-toggle:hover{background:var(--card2);color:var(--text)}
+.logout-btn{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;cursor:pointer;color:var(--red);font-size:13px;font-weight:600;border:none;background:none;width:100%;margin-top:4px;transition:all 0.15s}
+.logout-btn:hover{background:rgba(248,113,113,0.1)}
+
+/* MAIN CONTENT */
+.main{flex:1;overflow-y:auto;background:var(--bg)}
+.page{padding:28px;display:none;animation:fadeIn 0.3s ease}
+.page.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* PAGE HEADER */
+.page-header{margin-bottom:28px}
+.page-header h1{font-size:26px;font-weight:800;letter-spacing:-0.5px}
+.page-header p{color:var(--muted2);font-size:14px;margin-top:4px}
+.page-header .header-row{display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px}
+
+/* CARDS */
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px}
+.card-sm{padding:16px}
+.card-title{font-size:13px;font-weight:700;color:var(--muted2);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:12px}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.grid-auto{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
+
+/* STAT CARDS */
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;position:relative;overflow:hidden;transition:transform 0.2s,border-color 0.2s}
+.stat-card:hover{transform:translateY(-2px);border-color:var(--accent)}
+.stat-card::after{content:'';position:absolute;top:0;right:0;width:80px;height:80px;border-radius:50%;opacity:0.08;transform:translate(20px,-20px)}
+.stat-card.orange::after{background:var(--accent)}
+.stat-card.green::after{background:var(--green)}
+.stat-card.blue::after{background:var(--blue)}
+.stat-card.purple::after{background:var(--purple)}
+.stat-icon{font-size:22px;margin-bottom:10px}
+.stat-value{font-size:28px;font-weight:800;letter-spacing:-1px;line-height:1}
+.stat-label{font-size:12px;color:var(--muted2);margin-top:4px;font-weight:600}
+.stat-sub{font-size:11px;color:var(--muted);margin-top:2px}
+
+/* PROGRESS BAR */
+.prog-bar-wrap{background:var(--surface);border-radius:100px;overflow:hidden;height:6px;margin-top:6px}
+.prog-bar{height:100%;border-radius:100px;transition:width 0.8s cubic-bezier(0.4,0,0.2,1);min-width:0}
+.prog-bar.orange{background:linear-gradient(90deg,var(--accent),#ef4444)}
+.prog-bar.green{background:linear-gradient(90deg,var(--green),#16a34a)}
+.prog-bar.blue{background:linear-gradient(90deg,var(--blue),#6366f1)}
+.prog-bar.purple{background:linear-gradient(90deg,var(--purple),var(--blue))}
+.prog-bar.gold{background:linear-gradient(90deg,var(--gold),var(--accent))}
+.prog-bar.cyan{background:linear-gradient(90deg,var(--cyan),var(--blue))}
+
+/* TASK ITEMS */
+.task-item{display:flex;align-items:flex-start;gap:12px;padding:14px 16px;background:var(--surface);border:1px solid var(--border);border-radius:12px;transition:all 0.2s;cursor:pointer;margin-bottom:8px}
+.task-item:hover{border-color:var(--accent);background:var(--card2)}
+.task-item.done{opacity:0.55}
+.task-item.done .task-title{text-decoration:line-through;color:var(--muted)}
+.task-check{width:20px;height:20px;border-radius:6px;border:2px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all 0.2s;margin-top:1px}
+.task-check.checked{background:var(--green);border-color:var(--green)}
+.task-title{font-size:14px;font-weight:600;line-height:1.4}
+.task-meta{display:flex;gap:6px;margin-top:5px;flex-wrap:wrap}
+.badge{display:inline-flex;align-items:center;padding:2px 8px;border-radius:100px;font-size:11px;font-weight:700}
+.badge-orange{background:rgba(249,115,22,0.15);color:var(--accent)}
+.badge-green{background:rgba(34,197,94,0.15);color:var(--green)}
+.badge-blue{background:rgba(96,165,250,0.15);color:var(--blue)}
+.badge-purple{background:rgba(167,139,250,0.15);color:var(--purple)}
+.badge-gold{background:rgba(245,158,11,0.15);color:var(--gold)}
+.badge-red{background:rgba(248,113,113,0.15);color:var(--red)}
+.badge-cyan{background:rgba(34,211,238,0.15);color:var(--cyan)}
+.badge-gray{background:rgba(100,116,139,0.15);color:var(--muted2)}
+
+/* STREAK RING */
+.streak-ring{display:flex;flex-direction:column;align-items:center;gap:4px}
+.streak-ring .number{font-size:36px;font-weight:800;line-height:1;background:linear-gradient(135deg,var(--accent),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.streak-ring .label{font-size:11px;color:var(--muted2);font-weight:600;text-transform:uppercase;letter-spacing:1px}
+
+/* ROUTINE TIMELINE */
+.timeline{display:flex;flex-direction:column;gap:0}
+.tl-block{position:relative;padding-left:52px;padding-bottom:24px}
+.tl-block:last-child{padding-bottom:0}
+.tl-block::before{content:'';position:absolute;left:20px;top:32px;bottom:0;width:2px;background:var(--border)}
+.tl-block:last-child::before{display:none}
+.tl-dot{position:absolute;left:12px;top:8px;width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;border:2px solid var(--bg)}
+.tl-time{font-size:11px;color:var(--muted);font-family:'JetBrains Mono',monospace;font-weight:500;margin-bottom:4px}
+.tl-title{font-size:15px;font-weight:700;margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.tl-tasks{display:flex;flex-direction:column;gap:6px}
+.tl-task{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 14px;font-size:13px}
+
+/* POMODORO */
+.pomo-ring{position:relative;width:200px;height:200px;margin:0 auto}
+.pomo-ring svg{transform:rotate(-90deg)}
+.pomo-ring .time-display{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.pomo-ring .time-display .mins{font-size:40px;font-weight:800;font-family:'JetBrains Mono',monospace;letter-spacing:-2px;line-height:1}
+.pomo-ring .time-display .phase{font-size:11px;color:var(--muted2);font-weight:600;text-transform:uppercase;letter-spacing:1px;margin-top:4px}
+.pomo-controls{display:flex;gap:10px;justify-content:center;margin-top:20px}
+.pomo-btn{padding:10px 24px;border-radius:100px;border:none;font-family:'Syne',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:all 0.2s}
+.pomo-btn.start{background:linear-gradient(135deg,var(--green),#16a34a);color:#fff}
+.pomo-btn.pause{background:linear-gradient(135deg,var(--gold),var(--accent));color:#fff}
+.pomo-btn.reset{background:var(--surface);color:var(--muted2);border:1px solid var(--border)}
+
+/* INPUTS */
+.input{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 14px;color:var(--text);font-family:'Syne',sans-serif;font-size:14px;outline:none;transition:border-color 0.2s;width:100%}
+.input:focus{border-color:var(--accent)}
+.select{appearance:none;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 14px;color:var(--text);font-family:'Syne',sans-serif;font-size:14px;outline:none;cursor:pointer;width:100%}
+.textarea{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 14px;color:var(--text);font-family:'Syne',sans-serif;font-size:14px;outline:none;resize:vertical;width:100%;min-height:80px;transition:border-color 0.2s}
+.textarea:focus{border-color:var(--accent)}
+.btn{padding:10px 20px;border-radius:10px;border:none;font-family:'Syne',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:all 0.2s;display:inline-flex;align-items:center;gap:6px}
+.btn-accent{background:linear-gradient(135deg,var(--accent),#ef4444);color:#fff}
+.btn-accent:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(249,115,22,0.3)}
+.btn-ghost{background:var(--surface);color:var(--muted2);border:1px solid var(--border)}
+.btn-ghost:hover{color:var(--text);border-color:var(--muted)}
+.btn-danger{background:rgba(248,113,113,0.1);color:var(--red);border:1px solid rgba(248,113,113,0.2)}
+.btn-green{background:rgba(34,197,94,0.1);color:var(--green);border:1px solid rgba(34,197,94,0.2)}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:1000;display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity 0.2s;backdrop-filter:blur(4px)}
+.modal-overlay.open{opacity:1;pointer-events:all}
+.modal{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:28px;width:100%;max-width:480px;transform:scale(0.95);transition:transform 0.2s;max-height:90vh;overflow-y:auto}
+.modal-overlay.open .modal{transform:scale(1)}
+.modal-title{font-size:18px;font-weight:800;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between}
+.modal-close{background:var(--surface);border:none;color:var(--muted2);width:30px;height:30px;border-radius:8px;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;transition:color 0.2s}
+.modal-close:hover{color:var(--text)}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.form-field{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+.form-field label{font-size:12px;font-weight:700;color:var(--muted2);text-transform:uppercase;letter-spacing:0.5px}
+
+/* QUOTE CARD */
+.quote-card{background:linear-gradient(135deg,rgba(249,115,22,0.08),rgba(167,139,250,0.08));border:1px solid rgba(249,115,22,0.2);border-radius:var(--radius);padding:20px;position:relative;overflow:hidden}
+.quote-card::before{content:'"';position:absolute;top:-10px;left:16px;font-size:80px;color:var(--accent);opacity:0.15;font-family:Georgia,serif;line-height:1}
+.quote-text{font-size:15px;font-weight:600;line-height:1.6;position:relative;z-index:1}
+.quote-author{font-size:12px;color:var(--muted2);margin-top:8px;font-weight:600}
+
+/* CALENDAR */
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.cal-header{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:6px}
+.cal-day-label{text-align:center;font-size:11px;font-weight:700;color:var(--muted);padding:4px 0}
+.cal-day{aspect-ratio:1;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;cursor:pointer;transition:all 0.15s;position:relative}
+.cal-day.empty{opacity:0}
+.cal-day.today{border:2px solid var(--accent);color:var(--accent)}
+.cal-day.completed{background:rgba(34,197,94,0.2);color:var(--green)}
+.cal-day.partial{background:rgba(245,158,11,0.15);color:var(--gold)}
+.cal-day:hover{background:var(--card2)}
+
+/* DSA TRACKER */
+.problem-row{display:flex;align-items:center;gap:10px;padding:12px 16px;background:var(--surface);border:1px solid var(--border);border-radius:10px;margin-bottom:6px;transition:border-color 0.2s}
+.problem-row:hover{border-color:var(--border);background:var(--card2)}
+.diff-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.diff-easy{background:var(--green)}
+.diff-medium{background:var(--gold)}
+.diff-hard{background:var(--red)}
+
+/* HEALTH TRACKER */
+.water-drops{display:flex;gap:6px;flex-wrap:wrap}
+.water-drop{width:36px;height:36px;border-radius:50% 50% 50% 50% / 60% 60% 40% 40%;background:var(--surface);border:2px solid var(--border);cursor:pointer;transition:all 0.2s;display:flex;align-items:center;justify-content:center;font-size:16px}
+.water-drop.filled{background:rgba(96,165,250,0.2);border-color:var(--blue)}
+
+/* FOCUS MODE */
+#focus-mode{position:fixed;inset:0;background:rgba(0,0,0,0.95);z-index:2000;display:none;flex-direction:column;align-items:center;justify-content:center;backdrop-filter:blur(20px)}
+#focus-mode.active{display:flex}
+.focus-task{font-size:28px;font-weight:800;text-align:center;max-width:600px;line-height:1.3;margin-bottom:12px}
+.focus-category{font-size:14px;color:var(--accent);font-weight:700;text-transform:uppercase;letter-spacing:2px;margin-bottom:40px}
+.focus-close{position:absolute;top:24px;right:24px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:8px 16px;color:var(--muted2);cursor:pointer;font-family:'Syne',sans-serif;font-size:13px;font-weight:600}
+
+/* MOBILE HEADER */
+.mobile-header{display:none;align-items:center;justify-content:space-between;padding:16px 20px;background:var(--surface);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:50}
+.hamburger{background:none;border:none;color:var(--text);font-size:22px;cursor:pointer;display:flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:8px}
+.hamburger:hover{background:var(--card2)}
+.sidebar-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:99;display:none;backdrop-filter:blur(4px)}
+.sidebar-overlay.open{display:block}
+
+/* TOAST */
+.toast-container{position:fixed;bottom:24px;right:24px;z-index:5000;display:flex;flex-direction:column;gap:8px}
+.toast{background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:12px 16px;font-size:13px;font-weight:600;min-width:220px;animation:slideIn 0.3s ease;display:flex;align-items:center;gap:8px}
+.toast.success{border-left:3px solid var(--green)}
+.toast.error{border-left:3px solid var(--red)}
+.toast.info{border-left:3px solid var(--blue)}
+@keyframes slideIn{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
+@keyframes slideOut{to{opacity:0;transform:translateX(20px)}}
+
+/* EMPTY STATE */
+.empty-state{text-align:center;padding:48px 20px;color:var(--muted)}
+.empty-state .icon{font-size:48px;margin-bottom:12px}
+.empty-state p{font-size:14px;line-height:1.5}
+
+/* CHART WRAPPER */
+.chart-wrap{position:relative;height:200px}
+
+/* RESPONSIVE */
+@media(max-width:768px){
+  .mobile-header{display:flex}
+  .sidebar{position:fixed;left:0;top:0;bottom:0;transform:translateX(-100%);z-index:100}
+  .sidebar.open{transform:translateX(0)}
+  .main{width:100%}
+  .page{padding:16px}
+  .grid-2,.grid-3,.grid-4{grid-template-columns:1fr}
+  .form-row{grid-template-columns:1fr}
+  .page-header h1{font-size:22px}
+  .auth-box{padding:32px 24px}
+}
+@media(min-width:769px){
+  .mobile-header{display:none}
+}
+@media(max-width:480px){
+  .stat-value{font-size:22px}
+  .streak-ring .number{font-size:28px}
+}
+
+/* LIGHT MODE */
+body.light{
+  --bg:#f0f2f7;
+  --surface:#ffffff;
+  --card:#f8fafc;
+  --card2:#f1f5f9;
+  --border:#e2e8f0;
+  --text:#0f172a;
+  --muted:#94a3b8;
+  --muted2:#64748b;
+}
+body.light .sidebar{background:#ffffff}
+body.light .mobile-header{background:#ffffff}
+
+/* NOTIFICATION DOT */
+.notif-dot{width:6px;height:6px;background:var(--accent);border-radius:50%;position:absolute;top:6px;right:6px}
+
+/* EXPORT BTN */
+.export-btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:8px;background:rgba(96,165,250,0.1);border:1px solid rgba(96,165,250,0.3);color:var(--blue);font-size:12px;font-weight:700;cursor:pointer;font-family:'Syne',sans-serif;transition:all 0.2s}
+.export-btn:hover{background:rgba(96,165,250,0.2)}
+
+/* RATING STARS */
+.stars{display:flex;gap:4px}
+.star{font-size:20px;cursor:pointer;transition:transform 0.1s}
+.star:hover{transform:scale(1.2)}
+
+/* SECTION DIVIDER */
+.divider{height:1px;background:var(--border);margin:20px 0}
+
+/* NO ANIMATE on reduced motion */
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+<!-- AUTH SCREEN -->
+<div id="auth-screen">
+  <div class="auth-box">
+    <div class="auth-logo">
+      <div class="icon">⚡</div>
+      <h1>Focus<span>Forge</span></h1>
+    </div>
+    <div class="auth-tab">
+      <button class="active" onclick="switchAuth('login')">Sign In</button>
+      <button onclick="switchAuth('signup')">Sign Up</button>
+    </div>
+    <div class="auth-error" id="auth-error"></div>
+    <div class="auth-form" id="login-form">
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" id="login-email" placeholder="you@example.com" autocomplete="email"/>
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="login-pass" placeholder="••••••••" autocomplete="current-password"/>
+      </div>
+      <button class="btn-primary" onclick="handleLogin()">Enter FocusForge ⚡</button>
+      <p style="text-align:center;font-size:12px;color:var(--muted);margin-top:4px">Demo: use any email + password (6+ chars)</p>
+    </div>
+    <div class="auth-form" id="signup-form" style="display:none">
+      <div class="form-group">
+        <label>Full Name</label>
+        <input type="text" id="signup-name" placeholder="Om Kumar"/>
+      </div>
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" id="signup-email" placeholder="you@example.com"/>
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="signup-pass" placeholder="Min 6 characters"/>
+      </div>
+      <button class="btn-primary" onclick="handleSignup()">Start My 20-Day Journey 🚀</button>
+    </div>
+  </div>
+</div>
+
+<!-- FOCUS MODE OVERLAY -->
+<div id="focus-mode">
+  <button class="focus-close" onclick="exitFocusMode()">✕ Exit Focus Mode</button>
+  <div class="focus-category" id="focus-category">DSA</div>
+  <div class="focus-task" id="focus-task">Loading current task...</div>
+  <div style="display:flex;gap:16px;align-items:center;margin-top:20px">
+    <div style="text-align:center">
+      <div id="focus-timer" style="font-size:56px;font-weight:800;font-family:'JetBrains Mono',monospace;line-height:1">25:00</div>
+      <div style="font-size:12px;color:var(--muted2);margin-top:4px">FOCUS TIMER</div>
+    </div>
+  </div>
+  <div style="display:flex;gap:10px;margin-top:24px">
+    <button class="pomo-btn start" id="focus-start-btn" onclick="toggleFocusTimer()">▶ Start</button>
+    <button class="pomo-btn reset" onclick="resetFocusTimer()">↺ Reset</button>
+  </div>
+</div>
+
+<!-- MODAL: Add DSA Problem -->
+<div class="modal-overlay" id="modal-dsa">
+  <div class="modal">
+    <div class="modal-title">Add Problem <button class="modal-close" onclick="closeModal('modal-dsa')">✕</button></div>
+    <div class="form-field"><label>Problem Name</label><input class="input" id="dsa-name" placeholder="Two Sum"/></div>
+    <div class="form-row">
+      <div class="form-field"><label>Difficulty</label>
+        <select class="select" id="dsa-diff">
+          <option>Easy</option><option selected>Medium</option><option>Hard</option>
+        </select>
+      </div>
+      <div class="form-field"><label>Topic</label><input class="input" id="dsa-topic" placeholder="Arrays, DP..."/></div>
+    </div>
+    <div class="form-field"><label>LeetCode Link</label><input class="input" id="dsa-link" placeholder="https://leetcode.com/problems/..."/></div>
+    <div class="form-field"><label>Notes</label><textarea class="textarea" id="dsa-notes" placeholder="Key insight, approach..."></textarea></div>
+    <button class="btn btn-accent" style="width:100%" onclick="addDSAProblem()">✓ Save Problem</button>
+  </div>
+</div>
+
+<!-- MODAL: Add Spring Boot Topic -->
+<div class="modal-overlay" id="modal-sb">
+  <div class="modal">
+    <div class="modal-title">Add Topic <button class="modal-close" onclick="closeModal('modal-sb')">✕</button></div>
+    <div class="form-field"><label>Topic Name</label><input class="input" id="sb-topic" placeholder="Spring Security, JPA..."/></div>
+    <div class="form-field"><label>Subtopic / Details</label><input class="input" id="sb-sub" placeholder="JWT, OAuth2..."/></div>
+    <div class="form-field"><label>GitHub / Project Link</label><input class="input" id="sb-link" placeholder="https://github.com/..."/></div>
+    <div class="form-field"><label>Notes</label><textarea class="textarea" id="sb-notes"></textarea></div>
+    <button class="btn btn-accent" style="width:100%" onclick="addSBTopic()">✓ Save Topic</button>
+  </div>
+</div>
+
+<!-- MODAL: Add Communication Log -->
+<div class="modal-overlay" id="modal-comm">
+  <div class="modal">
+    <div class="modal-title">Log Speaking <button class="modal-close" onclick="closeModal('modal-comm')">✕</button></div>
+    <div class="form-field"><label>Topic Spoken</label><input class="input" id="comm-topic" placeholder="Explained microservices..."/></div>
+    <div class="form-field"><label>Type</label>
+      <select class="select" id="comm-type">
+        <option>English</option><option>Technical</option><option>Interview</option><option>Presentation</option><option>Other</option>
+      </select>
+    </div>
+    <div class="form-field"><label>Self Rating (1-5)</label>
+      <div class="stars" id="comm-stars">
+        <span class="star" onclick="setRating(1)">⭐</span>
+        <span class="star" onclick="setRating(2)">⭐</span>
+        <span class="star" onclick="setRating(3)">⭐</span>
+        <span class="star" onclick="setRating(4)">⭐</span>
+        <span class="star" onclick="setRating(5)">⭐</span>
+      </div>
+    </div>
+    <div class="form-field"><label>Notes</label><textarea class="textarea" id="comm-notes" placeholder="What went well, what to improve..."></textarea></div>
+    <button class="btn btn-accent" style="width:100%" onclick="addCommLog()">✓ Log Session</button>
+  </div>
+</div>
+
+<!-- TOAST CONTAINER -->
+<div class="toast-container" id="toast-container"></div>
+
+<!-- MAIN APP -->
+<div id="app">
+  <div class="layout">
+    <!-- Sidebar overlay for mobile -->
+    <div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-logo">
+        <div class="icon">⚡</div>
+        <h2>Focus<span>Forge</span></h2>
+      </div>
+      <div class="sidebar-user">
+        <div class="user-info">
+          <div class="user-avatar" id="sidebar-avatar">O</div>
+          <div>
+            <div class="user-name" id="sidebar-name">Om Kumar</div>
+            <div class="user-streak" id="sidebar-streak">🔥 0 day streak</div>
+          </div>
+        </div>
+      </div>
+      <nav class="sidebar-nav">
+        <div class="nav-section-label">Core</div>
+        <button class="nav-item active" onclick="navigate('dashboard')">
+          <span class="icon">📊</span> Dashboard
+        </button>
+        <button class="nav-item" onclick="navigate('routine')">
+          <span class="icon">📅</span> Daily Routine
+        </button>
+        <button class="nav-item" onclick="navigate('tasks')">
+          <span class="icon">✅</span> Task Manager
+        </button>
+        <button class="nav-item" onclick="navigate('analytics')">
+          <span class="icon">📈</span> Analytics
+        </button>
+        <div class="nav-section-label">Trackers</div>
+        <button class="nav-item" onclick="navigate('dsa')">
+          <span class="icon">🧩</span> DSA Tracker
+        </button>
+        <button class="nav-item" onclick="navigate('springboot')">
+          <span class="icon">🍃</span> Spring Boot
+        </button>
+        <button class="nav-item" onclick="navigate('academics')">
+          <span class="icon">🎓</span> Academics
+        </button>
+        <button class="nav-item" onclick="navigate('health')">
+          <span class="icon">💪</span> Health
+        </button>
+        <button class="nav-item" onclick="navigate('communication')">
+          <span class="icon">🗣️</span> Communication
+        </button>
+        <div class="nav-section-label">Tools</div>
+        <button class="nav-item" onclick="navigate('pomodoro')">
+          <span class="icon">⏱️</span> Pomodoro
+        </button>
+        <button class="nav-item" onclick="navigate('distraction')">
+          <span class="icon">📵</span> Distraction
+        </button>
+        <button class="nav-item" onclick="navigate('calendar')">
+          <span class="icon">🗓️</span> Calendar
+        </button>
+      </nav>
+      <div class="sidebar-footer">
+        <button class="theme-toggle" onclick="toggleTheme()">
+          <span id="theme-icon">☀️</span> <span id="theme-label">Light Mode</span>
+        </button>
+        <button class="logout-btn" onclick="logout()">
+          <span>🚪</span> Logout
+        </button>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main">
+      <!-- Mobile Header -->
+      <div class="mobile-header">
+        <button class="hamburger" onclick="toggleSidebar()">☰</button>
+        <span style="font-weight:800;font-size:16px">Focus<span style="color:var(--accent)">Forge</span></span>
+        <button onclick="enterFocusMode()" style="background:rgba(249,115,22,0.1);border:1px solid rgba(249,115,22,0.3);color:var(--accent);border-radius:8px;padding:6px 10px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Syne',sans-serif">Focus</button>
+      </div>
+
+      <!-- DASHBOARD PAGE -->
+      <section class="page active" id="page-dashboard">
+        <div class="page-header">
+          <div class="header-row">
+            <div>
+              <h1>Good <span id="greeting-time">Morning</span>, <span id="greeting-name">Om</span> 👋</h1>
+              <p id="today-date" style="color:var(--muted2)">Today is loading...</p>
+            </div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap">
+              <button class="export-btn" onclick="exportReport()">📄 Export PDF</button>
+              <button onclick="enterFocusMode()" style="background:rgba(249,115,22,0.1);border:1px solid rgba(249,115,22,0.3);color:var(--accent);border-radius:10px;padding:8px 16px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Syne',sans-serif">⚡ Focus Mode</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quote -->
+        <div class="quote-card" id="daily-quote" style="margin-bottom:20px">
+          <div class="quote-text" id="quote-text">Loading your daily motivation...</div>
+          <div class="quote-author" id="quote-author">— FocusForge</div>
+        </div>
+
+        <!-- Stats Row -->
+        <div class="grid-4" style="margin-bottom:20px" id="stat-grid">
+          <div class="stat-card orange">
+            <div class="stat-icon">🔥</div>
+            <div class="stat-value" id="stat-streak">0</div>
+            <div class="stat-label">Day Streak</div>
+            <div class="stat-sub" id="stat-longest">Longest: 0</div>
+          </div>
+          <div class="stat-card green">
+            <div class="stat-icon">✅</div>
+            <div class="stat-value" id="stat-done">0</div>
+            <div class="stat-label">Tasks Done Today</div>
+            <div class="stat-sub" id="stat-total-today">of 0 tasks</div>
+          </div>
+          <div class="stat-card blue">
+            <div class="stat-icon">🧩</div>
+            <div class="stat-value" id="stat-dsa">0</div>
+            <div class="stat-label">Problems Solved</div>
+            <div class="stat-sub">This week: <span id="stat-dsa-week">0</span></div>
+          </div>
+          <div class="stat-card purple">
+            <div class="stat-icon">📊</div>
+            <div class="stat-value" id="stat-pct">0%</div>
+            <div class="stat-label">Daily Progress</div>
+            <div class="stat-sub">Keep going!</div>
+          </div>
+        </div>
+
+        <!-- Category Progress -->
+        <div class="card" style="margin-bottom:20px">
+          <div class="card-title">Today's Goal Progress</div>
+          <div id="category-progress" style="display:flex;flex-direction:column;gap:14px"></div>
+        </div>
+
+        <!-- Today Tasks + Routine -->
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-title" style="display:flex;justify-content:space-between;align-items:center">
+              Today's Tasks
+              <button onclick="navigate('tasks')" style="font-size:11px;color:var(--accent);background:none;border:none;cursor:pointer;font-family:'Syne',sans-serif;font-weight:700">View All →</button>
+            </div>
+            <div id="today-tasks"></div>
+          </div>
+          <div class="card">
+            <div class="card-title">Quick Add</div>
+            <div style="display:flex;flex-direction:column;gap:10px">
+              <div class="form-field" style="margin-bottom:0">
+                <label>DSA Problem</label>
+                <input class="input" id="quick-dsa" placeholder="Problem name..."/>
+              </div>
+              <button class="btn btn-ghost" onclick="quickAddDSA()" style="width:100%">+ Log Problem</button>
+              <div class="divider" style="margin:4px 0"></div>
+              <div class="form-field" style="margin-bottom:0">
+                <label>Today's Note</label>
+                <textarea class="textarea" id="quick-note" placeholder="What did you learn today?" style="min-height:60px"></textarea>
+              </div>
+              <button class="btn btn-accent" onclick="saveNote()" style="width:100%">💾 Save Note</button>
+              <div id="saved-note" style="font-size:13px;color:var(--muted2);display:none"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ROUTINE PAGE -->
+      <section class="page" id="page-routine">
+        <div class="page-header">
+          <h1>Daily Routine</h1>
+          <p>Your optimized schedule — follow it, no excuses.</p>
+        </div>
+        <div class="grid-2">
+          <div>
+            <div class="timeline" id="routine-timeline"></div>
+          </div>
+          <div>
+            <div class="card" style="margin-bottom:16px">
+              <div class="card-title">⚡ Routine Rules</div>
+              <div style="display:flex;flex-direction:column;gap:8px;font-size:13px">
+                <div style="padding:8px 12px;background:rgba(249,115,22,0.08);border-radius:8px;border-left:3px solid var(--accent)">📱 Phone away during study blocks</div>
+                <div style="padding:8px 12px;background:rgba(34,197,94,0.08);border-radius:8px;border-left:3px solid var(--green)">💧 Drink water every hour</div>
+                <div style="padding:8px 12px;background:rgba(96,165,250,0.08);border-radius:8px;border-left:3px solid var(--blue)">🧩 DSA before anything else</div>
+                <div style="padding:8px 12px;background:rgba(167,139,250,0.08);border-radius:8px;border-left:3px solid var(--purple)">😴 Sleep by 11 PM — non-negotiable</div>
+                <div style="padding:8px 12px;background:rgba(245,158,11,0.08);border-radius:8px;border-left:3px solid var(--gold)">🗣️ Speak on one topic daily</div>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-title">Today's Day Number</div>
+              <div style="font-size:48px;font-weight:800;background:linear-gradient(135deg,var(--accent),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent" id="day-number-display">1</div>
+              <div style="font-size:13px;color:var(--muted2);margin-top:4px">of your 20-day journey</div>
+              <div style="margin-top:16px">
+                <div class="prog-bar-wrap" style="height:8px">
+                  <div class="prog-bar orange" id="journey-progress" style="width:5%"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TASKS PAGE -->
+      <section class="page" id="page-tasks">
+        <div class="page-header">
+          <div class="header-row">
+            <div>
+              <h1>Task Manager</h1>
+              <p>Your 20-day predefined tasks — all loaded and ready.</p>
+            </div>
+            <div style="display:flex;gap:8px">
+              <select class="select" id="task-filter-cat" onchange="renderTasksPage()" style="width:auto">
+                <option value="">All Categories</option>
+                <option>DSA</option><option>LeetCode</option><option>SpringBoot</option>
+                <option>Academics</option><option>Health</option><option>Communication</option>
+              </select>
+              <select class="select" id="task-filter-slot" onchange="renderTasksPage()" style="width:auto">
+                <option value="">All Slots</option>
+                <option>morning</option><option>college</option><option>evening</option><option>night</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div id="tasks-by-day"></div>
+      </section>
+
+      <!-- ANALYTICS PAGE -->
+      <section class="page" id="page-analytics">
+        <div class="page-header">
+          <div class="header-row">
+            <div><h1>Analytics</h1><p>Track your consistency and growth over time.</p></div>
+            <button class="export-btn" onclick="exportReport()">📄 Export Report</button>
+          </div>
+        </div>
+        <div class="grid-2" style="margin-bottom:20px">
+          <div class="card">
+            <div class="card-title">Weekly Completion (%)</div>
+            <div class="chart-wrap"><canvas id="chart-weekly"></canvas></div>
+          </div>
+          <div class="card">
+            <div class="card-title">Category Breakdown</div>
+            <div class="chart-wrap"><canvas id="chart-category"></canvas></div>
+          </div>
+        </div>
+        <div class="card" style="margin-bottom:20px">
+          <div class="card-title">Daily Stats — Last 14 Days</div>
+          <div class="chart-wrap" style="height:160px"><canvas id="chart-daily"></canvas></div>
+        </div>
+        <div class="grid-3">
+          <div class="card">
+            <div class="card-title">Total Tasks</div>
+            <div class="stat-value" id="a-total-tasks" style="font-size:32px;font-weight:800">0</div>
+            <div class="stat-sub" style="margin-top:4px">Across all days</div>
+          </div>
+          <div class="card">
+            <div class="card-title">Completion Rate</div>
+            <div class="stat-value" id="a-completion-rate" style="font-size:32px;font-weight:800;color:var(--green)">0%</div>
+            <div class="stat-sub" style="margin-top:4px">Overall</div>
+          </div>
+          <div class="card">
+            <div class="card-title">Best Day</div>
+            <div class="stat-value" id="a-best-day" style="font-size:20px;font-weight:800;color:var(--accent)">—</div>
+            <div class="stat-sub" style="margin-top:4px">Highest completion</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- DSA PAGE -->
+      <section class="page" id="page-dsa">
+        <div class="page-header">
+          <div class="header-row">
+            <div><h1>DSA Tracker</h1><p>Every problem solved is a neuron forged.</p></div>
+            <button class="btn btn-accent" onclick="openModal('modal-dsa')">+ Add Problem</button>
+          </div>
+        </div>
+        <div class="grid-4" style="margin-bottom:20px">
+          <div class="stat-card green">
+            <div class="stat-icon">✅</div>
+            <div class="stat-value" id="dsa-total">0</div>
+            <div class="stat-label">Total Solved</div>
+          </div>
+          <div class="stat-card green" style="--accent:var(--green)">
+            <div class="stat-icon">🟢</div>
+            <div class="stat-value" id="dsa-easy">0</div>
+            <div class="stat-label">Easy</div>
+          </div>
+          <div class="stat-card" style="border-color:rgba(245,158,11,0.3)">
+            <div class="stat-icon">🟡</div>
+            <div class="stat-value" id="dsa-med">0</div>
+            <div class="stat-label">Medium</div>
+          </div>
+          <div class="stat-card" style="border-color:rgba(248,113,113,0.3)">
+            <div class="stat-icon">🔴</div>
+            <div class="stat-value" id="dsa-hard">0</div>
+            <div class="stat-label">Hard</div>
+          </div>
+        </div>
+        <div class="card" style="margin-bottom:16px">
+          <div class="card-title">Progress to 100 Problems</div>
+          <div class="prog-bar-wrap" style="height:10px">
+            <div class="prog-bar green" id="dsa-100-bar" style="width:0%"></div>
+          </div>
+          <div style="font-size:12px;color:var(--muted2);margin-top:6px"><span id="dsa-100-text">0 / 100</span></div>
+        </div>
+        <div class="card">
+          <div class="card-title" style="display:flex;justify-content:space-between">
+            Problem Log
+            <input class="input" id="dsa-search" placeholder="Search..." style="width:180px;padding:6px 12px;font-size:12px" oninput="renderDSA()"/>
+          </div>
+          <div id="dsa-list"></div>
+        </div>
+      </section>
+
+      <!-- SPRING BOOT PAGE -->
+      <section class="page" id="page-springboot">
+        <div class="page-header">
+          <div class="header-row">
+            <div><h1>Spring Boot Tracker</h1><p>Build. Ship. Repeat.</p></div>
+            <button class="btn btn-accent" onclick="openModal('modal-sb')">+ Add Topic</button>
+          </div>
+        </div>
+        <div class="grid-2" style="margin-bottom:20px">
+          <div class="stat-card blue">
+            <div class="stat-icon">📚</div>
+            <div class="stat-value" id="sb-total">0</div>
+            <div class="stat-label">Topics Logged</div>
+          </div>
+          <div class="stat-card green">
+            <div class="stat-icon">✅</div>
+            <div class="stat-value" id="sb-done">0</div>
+            <div class="stat-label">Completed</div>
+          </div>
+        </div>
+        <div class="card" style="margin-bottom:16px">
+          <div class="card-title">Spring Boot Roadmap Progress</div>
+          <div id="sb-roadmap" style="display:flex;flex-direction:column;gap:8px"></div>
+        </div>
+        <div class="card">
+          <div class="card-title">My Topics</div>
+          <div id="sb-list"></div>
+        </div>
+      </section>
+
+      <!-- ACADEMICS PAGE -->
+      <section class="page" id="page-academics">
+        <div class="page-header">
+          <h1>Academics Tracker</h1>
+          <p>Stay on top of your subjects — no cramming allowed.</p>
+        </div>
+        <div class="grid-2">
+          <div>
+            <div class="card" style="margin-bottom:16px">
+              <div class="card-title">Log Study Session</div>
+              <div class="form-field"><label>Subject</label>
+                <select class="select" id="acad-subject">
+                  <option>DAA (Design & Analysis of Algorithms)</option>
+                  <option>DBMS</option>
+                  <option>OS (Operating Systems)</option>
+                  <option>CN (Computer Networks)</option>
+                  <option>Software Engineering</option>
+                  <option>Other</option>
+                </select>
+              </div>
+              <div class="form-field"><label>Topic Covered</label><input class="input" id="acad-topic" placeholder="Divide and Conquer..."/></div>
+              <div class="form-field"><label>Hours Studied</label><input class="input" type="number" id="acad-hours" placeholder="2" min="0.5" max="12" step="0.5"/></div>
+              <div class="form-field"><label>Notes</label><textarea class="textarea" id="acad-notes" placeholder="Key points..."></textarea></div>
+              <button class="btn btn-accent" style="width:100%" onclick="addAcadEntry()">✓ Log Session</button>
+            </div>
+          </div>
+          <div>
+            <div class="card" style="margin-bottom:16px">
+              <div class="card-title">Study Hours by Subject</div>
+              <div id="acad-subject-stats" style="display:flex;flex-direction:column;gap:10px"></div>
+            </div>
+            <div class="card">
+              <div class="card-title">Recent Sessions</div>
+              <div id="acad-list"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- HEALTH PAGE -->
+      <section class="page" id="page-health">
+        <div class="page-header">
+          <h1>Health Tracker</h1>
+          <p>A healthy body powers a focused mind.</p>
+        </div>
+        <div class="grid-2">
+          <div>
+            <div class="card" style="margin-bottom:16px">
+              <div class="card-title">💧 Water Intake</div>
+              <p style="font-size:12px;color:var(--muted2);margin-bottom:12px">Click to log each glass (target: 8)</p>
+              <div class="water-drops" id="water-drops"></div>
+              <div style="margin-top:12px;font-size:13px;color:var(--muted2)">
+                <span id="water-count">0</span> / 8 glasses today
+              </div>
+            </div>
+            <div class="card" style="margin-bottom:16px">
+              <div class="card-title">😴 Sleep Tracking</div>
+              <div class="form-field"><label>Hours Slept Last Night</label>
+                <input class="input" type="number" id="sleep-hours" placeholder="7.5" min="3" max="12" step="0.5"/>
+              </div>
+              <div class="form-field"><label>Sleep Quality</label>
+                <select class="select" id="sleep-quality">
+                  <option value="poor">😴 Poor</option>
+                  <option value="fair">😐 Fair</option>
+                  <option value="good" selected>🙂 Good</option>
+                  <option value="excellent">😄 Excellent</option>
+                </select>
+              </div>
+              <button class="btn btn-green" style="width:100%" onclick="saveHealth()">Save Health Data</button>
+            </div>
+          </div>
+          <div>
+            <div class="card" style="margin-bottom:16px">
+              <div class="card-title">🏃 Exercise</div>
+              <div style="display:flex;gap:10px;margin-bottom:12px">
+                <button id="ex-no" class="btn btn-ghost" style="flex:1" onclick="setExercise(false)">❌ Skipped</button>
+                <button id="ex-yes" class="btn btn-green" style="flex:1" onclick="setExercise(true)">✅ Done!</button>
+              </div>
+              <div class="form-field"><label>Minutes</label>
+                <input class="input" type="number" id="ex-mins" placeholder="30" min="0"/>
+              </div>
+            </div>
+            <div class="card" style="margin-bottom:16px">
+              <div class="card-title">😊 Mood Check</div>
+              <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap" id="mood-selector">
+                <button class="mood-btn" onclick="setMood('😴')" style="font-size:28px;background:none;border:2px solid transparent;border-radius:10px;padding:6px;cursor:pointer;transition:all 0.2s">😴</button>
+                <button class="mood-btn" onclick="setMood('😐')" style="font-size:28px;background:none;border:2px solid transparent;border-radius:10px;padding:6px;cursor:pointer;transition:all 0.2s">😐</button>
+                <button class="mood-btn" onclick="setMood('🙂')" style="font-size:28px;background:none;border:2px solid transparent;border-radius:10px;padding:6px;cursor:pointer;transition:all 0.2s">🙂</button>
+                <button class="mood-btn" onclick="setMood('😄')" style="font-size:28px;background:none;border:2px solid transparent;border-radius:10px;padding:6px;cursor:pointer;transition:all 0.2s">😄</button>
+                <button class="mood-btn" onclick="setMood('🚀')" style="font-size:28px;background:none;border:2px solid transparent;border-radius:10px;padding:6px;cursor:pointer;transition:all 0.2s">🚀</button>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-title">Last 7 Days Health</div>
+              <div id="health-history" style="display:flex;flex-direction:column;gap:6px"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- COMMUNICATION PAGE -->
+      <section class="page" id="page-communication">
+        <div class="page-header">
+          <div class="header-row">
+            <div><h1>Communication Log</h1><p>Speak daily. Improve weekly. Impress always.</p></div>
+            <button class="btn btn-accent" onclick="openModal('modal-comm')">+ Log Session</button>
+          </div>
+        </div>
+        <div class="grid-3" style="margin-bottom:20px">
+          <div class="stat-card purple">
+            <div class="stat-icon">🗣️</div>
+            <div class="stat-value" id="comm-total">0</div>
+            <div class="stat-label">Sessions Logged</div>
+          </div>
+          <div class="stat-card blue">
+            <div class="stat-icon">⭐</div>
+            <div class="stat-value" id="comm-avg">0.0</div>
+            <div class="stat-label">Avg Rating</div>
+          </div>
+          <div class="stat-card orange">
+            <div class="stat-icon">📅</div>
+            <div class="stat-value" id="comm-streak">0</div>
+            <div class="stat-label">Day Streak</div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">Session History</div>
+          <div id="comm-list"></div>
+        </div>
+      </section>
+
+      <!-- POMODORO PAGE -->
+      <section class="page" id="page-pomodoro">
+        <div class="page-header">
+          <h1>Pomodoro Timer</h1>
+          <p>25 min focus. 5 min rest. Repeat until mastery.</p>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:24px">
+          <div style="display:flex;gap:8px">
+            <button class="btn" id="pomo-mode-focus" onclick="setPomoMode('focus')" style="background:rgba(249,115,22,0.15);color:var(--accent);border:1px solid rgba(249,115,22,0.3)">Focus 25m</button>
+            <button class="btn btn-ghost" id="pomo-mode-short" onclick="setPomoMode('short')">Short Break 5m</button>
+            <button class="btn btn-ghost" id="pomo-mode-long" onclick="setPomoMode('long')">Long Break 15m</button>
+          </div>
+          <div class="pomo-ring">
+            <svg width="200" height="200" viewBox="0 0 200 200">
+              <circle cx="100" cy="100" r="88" fill="none" stroke="var(--border)" stroke-width="10"/>
+              <circle id="pomo-circle" cx="100" cy="100" r="88" fill="none" stroke="var(--accent)" stroke-width="10"
+                stroke-dasharray="552.9" stroke-dashoffset="0" stroke-linecap="round" style="transition:stroke-dashoffset 1s linear"/>
+            </svg>
+            <div class="time-display">
+              <div class="mins" id="pomo-display">25:00</div>
+              <div class="phase" id="pomo-phase">FOCUS</div>
+            </div>
+          </div>
+          <div class="pomo-controls">
+            <button class="pomo-btn start" id="pomo-btn" onclick="togglePomodoro()">▶ Start</button>
+            <button class="pomo-btn reset" onclick="resetPomodoro()">↺ Reset</button>
+          </div>
+          <div class="card" style="width:100%;max-width:400px">
+            <div class="card-title">Session Stats</div>
+            <div class="grid-3">
+              <div style="text-align:center">
+                <div style="font-size:24px;font-weight:800;color:var(--accent)" id="pomo-sessions">0</div>
+                <div style="font-size:11px;color:var(--muted2)">Sessions Today</div>
+              </div>
+              <div style="text-align:center">
+                <div style="font-size:24px;font-weight:800;color:var(--green)" id="pomo-mins">0</div>
+                <div style="font-size:11px;color:var(--muted2)">Minutes Focused</div>
+              </div>
+              <div style="text-align:center">
+                <div style="font-size:24px;font-weight:800;color:var(--purple)" id="pomo-total-sessions">0</div>
+                <div style="font-size:11px;color:var(--muted2)">Total Ever</div>
+              </div>
+            </div>
+          </div>
+          <div class="card" style="width:100%;max-width:400px">
+            <div class="card-title">Select Task to Focus On</div>
+            <select class="select" id="pomo-task-select" style="width:100%"></select>
+          </div>
+        </div>
+      </section>
+
+      <!-- DISTRACTION PAGE -->
+      <section class="page" id="page-distraction">
+        <div class="page-header">
+          <h1>Distraction Control</h1>
+          <p>Awareness is the first step to control.</p>
+        </div>
+        <div class="grid-2">
+          <div>
+            <div class="card" style="margin-bottom:16px">
+              <div class="card-title">📱 Phone Usage Today</div>
+              <div class="form-field"><label>Hours Used</label>
+                <input class="input" type="number" id="phone-hours" placeholder="2.5" min="0" max="24" step="0.5"/>
+              </div>
+              <div class="form-field"><label>Social Media (minutes)</label>
+                <input class="input" type="number" id="social-mins" placeholder="45" min="0"/>
+              </div>
+              <div class="form-field"><label>What distracted you?</label>
+                <input class="input" id="distracted-by" placeholder="YouTube, Instagram..."/>
+              </div>
+              <div class="form-field"><label>Focus Score (1-10)</label>
+                <div style="display:flex;align-items:center;gap:12px">
+                  <input type="range" id="focus-score" min="1" max="10" value="7" style="flex:1;accent-color:var(--accent)"/>
+                  <span id="focus-score-display" style="font-size:20px;font-weight:800;color:var(--accent);width:30px">7</span>
+                </div>
+              </div>
+              <button class="btn btn-accent" style="width:100%" onclick="saveDistraction()">Save Today's Data</button>
+            </div>
+          </div>
+          <div>
+            <div class="card" style="margin-bottom:16px">
+              <div class="card-title">Usage Limit</div>
+              <div style="font-size:13px;color:var(--muted2);margin-bottom:12px">Daily limit: <strong style="color:var(--text)" id="phone-limit-display">2 hours</strong></div>
+              <input type="range" min="0.5" max="8" step="0.5" id="phone-limit" value="2" style="width:100%;accent-color:var(--accent)" oninput="updatePhoneLimit()"/>
+              <div id="phone-warning" style="display:none;margin-top:12px;padding:10px;background:rgba(248,113,113,0.1);border:1px solid rgba(248,113,113,0.3);border-radius:8px;font-size:13px;color:var(--red)">
+                ⚠️ You've exceeded your daily phone limit!
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-title">Focus History (7 days)</div>
+              <div id="distraction-history"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- CALENDAR PAGE -->
+      <section class="page" id="page-calendar">
+        <div class="page-header">
+          <h1>Calendar View</h1>
+          <p>See your consistency at a glance.</p>
+        </div>
+        <div class="card">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+            <button class="btn btn-ghost" onclick="changeMonth(-1)">← Prev</button>
+            <h2 id="cal-title" style="font-size:18px;font-weight:800"></h2>
+            <button class="btn btn-ghost" onclick="changeMonth(1)">Next →</button>
+          </div>
+          <div class="cal-header">
+            <div class="cal-day-label">Sun</div><div class="cal-day-label">Mon</div>
+            <div class="cal-day-label">Tue</div><div class="cal-day-label">Wed</div>
+            <div class="cal-day-label">Thu</div><div class="cal-day-label">Fri</div>
+            <div class="cal-day-label">Sat</div>
+          </div>
+          <div class="cal-grid" id="cal-grid"></div>
+        </div>
+        <div style="display:flex;gap:12px;margin-top:16px;flex-wrap:wrap">
+          <div style="display:flex;align-items:center;gap:6px;font-size:12px"><div style="width:12px;height:12px;border-radius:3px;background:rgba(34,197,94,0.2)"></div>Completed (&gt;80%)</div>
+          <div style="display:flex;align-items:center;gap:6px;font-size:12px"><div style="width:12px;height:12px;border-radius:3px;background:rgba(245,158,11,0.15)"></div>Partial (30-80%)</div>
+          <div style="display:flex;align-items:center;gap:6px;font-size:12px"><div style="width:12px;height:12px;border-radius:3px;border:2px solid var(--accent)"></div>Today</div>
+        </div>
+      </section>
+    </main>
+  </div>
+</div>
+
+<script>
+// ===================== DATA STORE =====================
+const DB = {
+  get: (key, def=null) => { try { return JSON.parse(localStorage.getItem('ff_'+key)) ?? def; } catch { return def; } },
+  set: (key, val) => localStorage.setItem('ff_'+key, JSON.stringify(val)),
+};
+
+// ===================== AUTH =====================
+let currentUser = null;
+const QUOTES = [
+  {text:"The secret of getting ahead is getting started.",author:"Mark Twain"},
+  {text:"Discipline is the bridge between goals and accomplishment.",author:"Jim Rohn"},
+  {text:"Don't watch the clock; do what it does. Keep going.",author:"Sam Levenson"},
+  {text:"Success is the sum of small efforts, repeated day in and day out.",author:"Robert Collier"},
+  {text:"The pain you feel today will be the strength you feel tomorrow.",author:"Unknown"},
+  {text:"Either you run the day or the day runs you.",author:"Jim Rohn"},
+  {text:"Code is like humor. When you have to explain it, it's bad.",author:"Cory House"},
+  {text:"First, solve the problem. Then, write the code.",author:"John Johnson"},
+  {text:"The only way to do great work is to love what you do.",author:"Steve Jobs"},
+  {text:"Hard work beats talent when talent doesn't work hard.",author:"Tim Notke"},
+  {text:"Your future is created by what you do today, not tomorrow.",author:"Robert Kiyosaki"},
+  {text:"Small daily improvements are the key to staggering long-term results.",author:"Unknown"},
+  {text:"The expert in anything was once a beginner.",author:"Helen Hayes"},
+  {text:"Push yourself, because no one else is going to do it for you.",author:"Unknown"},
+  {text:"Great things never come from comfort zones.",author:"Unknown"},
+  {text:"Be so good they can't ignore you.",author:"Steve Martin"},
+  {text:"Dream big. Start small. Act now.",author:"Robin Sharma"},
+  {text:"The journey of a thousand miles begins with a single step.",author:"Lao Tzu"},
+  {text:"You don't have to be great to start, but you have to start to be great.",author:"Zig Ziglar"},
+  {text:"Focus on being productive instead of busy.",author:"Tim Ferriss"},
+];
+
+function switchAuth(mode) {
+  document.querySelectorAll('.auth-tab button').forEach((b,i) => b.classList.toggle('active', (mode==='login'&&i===0)||(mode==='signup'&&i===1)));
+  document.getElementById('login-form').style.display = mode==='login'?'flex':'none';
+  document.getElementById('signup-form').style.display = mode==='signup'?'flex':'none';
+  document.getElementById('auth-error').style.display = 'none';
+}
+
+function showAuthError(msg) {
+  const el = document.getElementById('auth-error');
+  el.textContent = msg; el.style.display = 'block';
+}
+
+function handleLogin() {
+  const email = document.getElementById('login-email').value.trim();
+  const pass = document.getElementById('login-pass').value;
+  if (!email || !pass) return showAuthError('Please fill all fields.');
+  if (pass.length < 6) return showAuthError('Password must be 6+ characters.');
+  const users = DB.get('users', {});
+  if (!users[email]) return showAuthError('No account found. Please sign up.');
+  if (users[email].password !== btoa(pass)) return showAuthError('Incorrect password.');
+  loginUser(users[email]);
+}
+
+function handleSignup() {
+  const name = document.getElementById('signup-name').value.trim();
+  const email = document.getElementById('signup-email').value.trim();
+  const pass = document.getElementById('signup-pass').value;
+  if (!name || !email || !pass) return showAuthError('Please fill all fields.');
+  if (pass.length < 6) return showAuthError('Password must be 6+ characters.');
+  const users = DB.get('users', {});
+  if (users[email]) return showAuthError('Email already registered. Please sign in.');
+  const user = { id: Date.now(), name, email, password: btoa(pass), streak: 1, longestStreak: 1, startDate: new Date().toISOString().split('T')[0], lastActive: new Date().toISOString().split('T')[0] };
+  users[email] = user;
+  DB.set('users', users);
+  // Auto-generate tasks for this user
+  generatePredefinedTasks(email, user.startDate);
+  loginUser(user);
+}
+
+function loginUser(user) {
+  currentUser = user;
+  DB.set('session', user.email);
+  updateStreak(user);
+  initApp();
+}
+
+function updateStreak(user) {
+  const users = DB.get('users', {});
+  const today = new Date().toISOString().split('T')[0];
+  const yesterday = new Date(Date.now()-86400000).toISOString().split('T')[0];
+  if (user.lastActive === yesterday) {
+    user.streak = (user.streak||0) + 1;
+    if (user.streak > user.longestStreak) user.longestStreak = user.streak;
+  } else if (user.lastActive !== today) {
+    user.streak = 1;
+  }
+  user.lastActive = today;
+  users[user.email] = user;
+  DB.set('users', users);
+  currentUser = user;
+}
+
+function logout() {
+  DB.set('session', null);
+  currentUser = null;
+  document.getElementById('auth-screen').style.display = 'flex';
+  document.getElementById('app').style.display = 'none';
+  toast('Logged out successfully', 'info');
+}
+
+// ===================== PREDEFINED TASKS =====================
+const PREDEFINED = [
+  {day:1,category:'DSA',title:'Arrays - Two Sum, Best Time to Buy Stock',timeSlot:'morning',priority:'high'},
+  {day:1,category:'LeetCode',title:'Solve 3 Easy Array problems',timeSlot:'morning',priority:'high'},
+  {day:1,category:'SpringBoot',title:'Spring Boot project setup, application.properties',timeSlot:'evening',priority:'high'},
+  {day:1,category:'Academics',title:'Review DAA Unit 1 - Asymptotic Analysis',timeSlot:'college',priority:'medium'},
+  {day:1,category:'Health',title:'8 glasses water, 20 min walk, sleep by 11 PM',timeSlot:'night',priority:'medium'},
+  {day:1,category:'Communication',title:'Speak on "My goals for the next 20 days" (5 min)',timeSlot:'night',priority:'low'},
+  {day:2,category:'DSA',title:"Arrays - Kadane's Algorithm, Sliding Window",timeSlot:'morning',priority:'high'},
+  {day:2,category:'LeetCode',title:'Maximum Subarray, Min Size Subarray Sum',timeSlot:'morning',priority:'high'},
+  {day:2,category:'SpringBoot',title:'REST Controllers, @GetMapping, @PostMapping',timeSlot:'evening',priority:'high'},
+  {day:2,category:'Academics',title:'DAA - Divide and Conquer (Merge Sort)',timeSlot:'college',priority:'medium'},
+  {day:2,category:'Health',title:'Morning stretch routine, 8 glasses water',timeSlot:'morning',priority:'medium'},
+  {day:2,category:'Communication',title:'Describe your favorite project to an imaginary interviewer',timeSlot:'night',priority:'low'},
+  {day:3,category:'DSA',title:'Strings - Anagrams, Palindrome, Longest Substring',timeSlot:'morning',priority:'high'},
+  {day:3,category:'LeetCode',title:'Valid Anagram, Longest Substring Without Repeating',timeSlot:'morning',priority:'high'},
+  {day:3,category:'SpringBoot',title:'Spring Data JPA, Entity creation, Repository',timeSlot:'evening',priority:'high'},
+  {day:3,category:'Academics',title:'DAA - Quick Sort analysis and implementation',timeSlot:'college',priority:'medium'},
+  {day:3,category:'Health',title:'25 min workout, track sleep hours',timeSlot:'night',priority:'medium'},
+  {day:3,category:'Communication',title:'Practice answering "Tell me about yourself"',timeSlot:'night',priority:'low'},
+  {day:4,category:'DSA',title:'Hashing - HashMap, HashSet problems',timeSlot:'morning',priority:'high'},
+  {day:4,category:'LeetCode',title:'Group Anagrams, Two Sum (HashMap approach)',timeSlot:'morning',priority:'high'},
+  {day:4,category:'SpringBoot',title:'CRUD API - Create and Read endpoints',timeSlot:'evening',priority:'high'},
+  {day:4,category:'Academics',title:'Unit test preparation, past papers review',timeSlot:'college',priority:'high'},
+  {day:4,category:'Health',title:'8 glasses water, 30 min walk',timeSlot:'evening',priority:'medium'},
+  {day:4,category:'Communication',title:'Explain HashMap vs HashSet to camera/mirror',timeSlot:'night',priority:'low'},
+  {day:5,category:'DSA',title:'Linked List - Reverse, Detect Cycle, Merge',timeSlot:'morning',priority:'high'},
+  {day:5,category:'LeetCode',title:'Reverse Linked List, Linked List Cycle',timeSlot:'morning',priority:'high'},
+  {day:5,category:'SpringBoot',title:'CRUD API - Update and Delete, Exception handling',timeSlot:'evening',priority:'high'},
+  {day:5,category:'Academics',title:'Greedy Algorithms - Activity Selection',timeSlot:'college',priority:'medium'},
+  {day:5,category:'Health',title:'Rest day - gentle walk, good sleep',timeSlot:'night',priority:'medium'},
+  {day:5,category:'Communication',title:'Speak on "Why Java for backend development?"',timeSlot:'night',priority:'low'},
+  {day:6,category:'DSA',title:'Stack & Queue - Valid Parentheses, Min Stack',timeSlot:'morning',priority:'high'},
+  {day:6,category:'LeetCode',title:'Valid Parentheses, Daily Temperatures',timeSlot:'morning',priority:'high'},
+  {day:6,category:'SpringBoot',title:'Spring Security basics, JWT configuration',timeSlot:'evening',priority:'high'},
+  {day:6,category:'Academics',title:"Huffman Coding, Kruskal's algorithm",timeSlot:'college',priority:'medium'},
+  {day:6,category:'Health',title:'Workout session 30 min, 8 glasses water',timeSlot:'morning',priority:'medium'},
+  {day:6,category:'Communication',title:'Mock interview: behavioral questions practice',timeSlot:'night',priority:'medium'},
+  {day:7,category:'DSA',title:'Trees - BFS, DFS, Level Order Traversal',timeSlot:'morning',priority:'high'},
+  {day:7,category:'LeetCode',title:'Binary Tree Level Order, Max Depth of Binary Tree',timeSlot:'morning',priority:'high'},
+  {day:7,category:'SpringBoot',title:'JWT auth implementation, token refresh',timeSlot:'evening',priority:'high'},
+  {day:7,category:'Academics',title:'Weekly revision - all topics covered',timeSlot:'college',priority:'high'},
+  {day:7,category:'Health',title:'Weekly health check - measure progress',timeSlot:'evening',priority:'medium'},
+  {day:7,category:'Communication',title:'Reflect on week - what improved, what to work on',timeSlot:'night',priority:'medium'},
+  {day:8,category:'DSA',title:'BST - Search, Insert, Validate BST',timeSlot:'morning',priority:'high'},
+  {day:8,category:'LeetCode',title:'Validate Binary Search Tree, Inorder Traversal',timeSlot:'morning',priority:'high'},
+  {day:8,category:'SpringBoot',title:'Microservices intro, Spring Cloud',timeSlot:'evening',priority:'high'},
+  {day:8,category:'Academics',title:'Dynamic Programming introduction',timeSlot:'college',priority:'medium'},
+  {day:8,category:'Health',title:'30 min jog or walk, healthy meal plan',timeSlot:'morning',priority:'medium'},
+  {day:8,category:'Communication',title:'Explain microservices vs monolith architecture',timeSlot:'night',priority:'low'},
+  {day:9,category:'DSA',title:'Heap - Kth Largest Element, Top K Frequent',timeSlot:'morning',priority:'high'},
+  {day:9,category:'LeetCode',title:'Kth Largest in Array, Find Median from Data Stream',timeSlot:'morning',priority:'high'},
+  {day:9,category:'SpringBoot',title:'Database optimization, indexing, query tuning',timeSlot:'evening',priority:'high'},
+  {day:9,category:'Academics',title:'DP - Fibonacci, Coin Change, 0/1 Knapsack',timeSlot:'college',priority:'medium'},
+  {day:9,category:'Health',title:'Yoga or stretching, 8 glasses water',timeSlot:'night',priority:'medium'},
+  {day:9,category:'Communication',title:'Practice explaining a complex algorithm simply',timeSlot:'night',priority:'low'},
+  {day:10,category:'DSA',title:'Graphs - BFS, DFS, Number of Islands',timeSlot:'morning',priority:'high'},
+  {day:10,category:'LeetCode',title:'Number of Islands, Clone Graph',timeSlot:'morning',priority:'high'},
+  {day:10,category:'SpringBoot',title:'REST API best practices, versioning, documentation',timeSlot:'evening',priority:'high'},
+  {day:10,category:'Academics',title:'Mid-point review - all subjects status',timeSlot:'college',priority:'high'},
+  {day:10,category:'Health',title:'Full rest + mental reset, 8 hours sleep target',timeSlot:'night',priority:'medium'},
+  {day:10,category:'Communication',title:"10-day progress speech: what you've learned",timeSlot:'night',priority:'medium'},
+  {day:11,category:'DSA',title:'Dynamic Programming - LCS, Edit Distance',timeSlot:'morning',priority:'high'},
+  {day:11,category:'LeetCode',title:'Longest Common Subsequence, Edit Distance',timeSlot:'morning',priority:'high'},
+  {day:11,category:'SpringBoot',title:'Kafka/RabbitMQ intro, async messaging',timeSlot:'evening',priority:'high'},
+  {day:11,category:'Academics',title:'Graph algorithms - Dijkstra, Bellman-Ford',timeSlot:'college',priority:'medium'},
+  {day:11,category:'Health',title:'Workout + protein-rich diet focus',timeSlot:'morning',priority:'medium'},
+  {day:11,category:'Communication',title:'Explain REST API design to non-technical friend',timeSlot:'night',priority:'low'},
+  {day:12,category:'DSA',title:'Backtracking - N-Queens, Subsets, Permutations',timeSlot:'morning',priority:'high'},
+  {day:12,category:'LeetCode',title:'Subsets, Permutations, Combination Sum',timeSlot:'morning',priority:'high'},
+  {day:12,category:'SpringBoot',title:'Docker containerization of Spring Boot app',timeSlot:'evening',priority:'high'},
+  {day:12,category:'Academics',title:'NP Completeness, P vs NP',timeSlot:'college',priority:'medium'},
+  {day:12,category:'Health',title:'8 glasses water, evening walk 25 min',timeSlot:'evening',priority:'medium'},
+  {day:12,category:'Communication',title:'Mock technical interview - DSA questions',timeSlot:'night',priority:'medium'},
+  {day:13,category:'DSA',title:'Greedy - Jump Game, Gas Station',timeSlot:'morning',priority:'high'},
+  {day:13,category:'LeetCode',title:'Jump Game I & II, Gas Station',timeSlot:'morning',priority:'high'},
+  {day:13,category:'SpringBoot',title:'CI/CD pipeline setup, GitHub Actions',timeSlot:'evening',priority:'high'},
+  {day:13,category:'Academics',title:'Semester exam strategy, topic priority',timeSlot:'college',priority:'high'},
+  {day:13,category:'Health',title:'Full workout session, track sleep',timeSlot:'morning',priority:'medium'},
+  {day:13,category:'Communication',title:'Speak about your Spring Boot project for 5 min',timeSlot:'night',priority:'medium'},
+  {day:14,category:'DSA',title:'Trie - Implement, Word Search, Autocomplete',timeSlot:'morning',priority:'high'},
+  {day:14,category:'LeetCode',title:'Implement Trie, Word Search II',timeSlot:'morning',priority:'high'},
+  {day:14,category:'SpringBoot',title:'AWS deployment - EC2 or Railway',timeSlot:'evening',priority:'high'},
+  {day:14,category:'Academics',title:'Two weeks revision - all units',timeSlot:'college',priority:'high'},
+  {day:14,category:'Health',title:'Rest day, 8 hours sleep, meal prep',timeSlot:'night',priority:'medium'},
+  {day:14,category:'Communication',title:'Group discussion practice on tech topic',timeSlot:'night',priority:'medium'},
+  {day:15,category:'DSA',title:'Advanced DP - Matrix Chain, Palindrome',timeSlot:'morning',priority:'high'},
+  {day:15,category:'LeetCode',title:'Longest Palindromic Subsequence, Burst Balloons',timeSlot:'morning',priority:'high'},
+  {day:15,category:'SpringBoot',title:'Complete project: add authentication + CRUD',timeSlot:'evening',priority:'high'},
+  {day:15,category:'Academics',title:'Mock exam practice - timed sessions',timeSlot:'college',priority:'high'},
+  {day:15,category:'Health',title:'30 min run, hydration tracking',timeSlot:'morning',priority:'medium'},
+  {day:15,category:'Communication',title:'15-day reflection: present your growth story',timeSlot:'night',priority:'medium'},
+  {day:16,category:'DSA',title:'Bit Manipulation - Single Number, Power of Two',timeSlot:'morning',priority:'high'},
+  {day:16,category:'LeetCode',title:'Single Number, Counting Bits, Reverse Bits',timeSlot:'morning',priority:'high'},
+  {day:16,category:'SpringBoot',title:'Project testing - JUnit, Mockito',timeSlot:'evening',priority:'high'},
+  {day:16,category:'Academics',title:'Final exam preparation - weak topics',timeSlot:'college',priority:'high'},
+  {day:16,category:'Health',title:'Workout + sleep 8 hours',timeSlot:'morning',priority:'medium'},
+  {day:16,category:'Communication',title:'Technical presentation: explain your project',timeSlot:'night',priority:'medium'},
+  {day:17,category:'DSA',title:'System Design basics - scalability, caching',timeSlot:'morning',priority:'high'},
+  {day:17,category:'LeetCode',title:'LRU Cache, Design Twitter',timeSlot:'morning',priority:'high'},
+  {day:17,category:'SpringBoot',title:'Deploy full project, write README',timeSlot:'evening',priority:'high'},
+  {day:17,category:'Academics',title:'Exam simulation - full paper',timeSlot:'college',priority:'high'},
+  {day:17,category:'Health',title:'Light exercise, focus on mental clarity',timeSlot:'evening',priority:'medium'},
+  {day:17,category:'Communication',title:'Practice "walk me through your resume"',timeSlot:'night',priority:'medium'},
+  {day:18,category:'DSA',title:'Mock interview - random medium problems',timeSlot:'morning',priority:'high'},
+  {day:18,category:'LeetCode',title:'Timed practice: 2 Medium problems in 60 min',timeSlot:'morning',priority:'high'},
+  {day:18,category:'SpringBoot',title:'Code review, optimize and refactor project',timeSlot:'evening',priority:'high'},
+  {day:18,category:'Academics',title:'Final revision - formulas and key concepts',timeSlot:'college',priority:'high'},
+  {day:18,category:'Health',title:'8 glasses water, 30 min walk, 8 hrs sleep',timeSlot:'night',priority:'medium'},
+  {day:18,category:'Communication',title:'HR round questions: strengths, weaknesses, salary',timeSlot:'night',priority:'medium'},
+  {day:19,category:'DSA',title:'Revision - weak areas from last 18 days',timeSlot:'morning',priority:'high'},
+  {day:19,category:'LeetCode',title:'Solve 5 problems from weak topics',timeSlot:'morning',priority:'high'},
+  {day:19,category:'SpringBoot',title:'Project portfolio - update GitHub, LinkedIn',timeSlot:'evening',priority:'high'},
+  {day:19,category:'Academics',title:'Last minute preparation, mind maps',timeSlot:'college',priority:'high'},
+  {day:19,category:'Health',title:'Light walk, good sleep for final day',timeSlot:'night',priority:'medium'},
+  {day:19,category:'Communication',title:'Final mock interview - full round',timeSlot:'night',priority:'high'},
+  {day:20,category:'DSA',title:'Final review - all data structures cheatsheet',timeSlot:'morning',priority:'high'},
+  {day:20,category:'LeetCode',title:'Solve top interview question - Hard problem',timeSlot:'morning',priority:'high'},
+  {day:20,category:'SpringBoot',title:'Final project demo, record video walkthrough',timeSlot:'evening',priority:'high'},
+  {day:20,category:'Academics',title:'20-day academic summary, grade projection',timeSlot:'college',priority:'medium'},
+  {day:20,category:'Health',title:'Celebrate! Treat yourself healthily',timeSlot:'night',priority:'medium'},
+  {day:20,category:'Communication',title:'20-day achievement speech - record yourself',timeSlot:'night',priority:'high'},
+];
+
+function generatePredefinedTasks(userEmail, startDateStr) {
+  const start = new Date(startDateStr);
+  const tasks = DB.get('tasks_'+userEmail, []);
+  PREDEFINED.forEach(t => {
+    const d = new Date(start);
+    d.setDate(d.getDate() + t.day - 1);
+    const dateStr = d.toISOString().split('T')[0];
+    const exists = tasks.find(x => x.date===dateStr && x.title===t.title);
+    if (!exists) {
+      tasks.push({ id: `${Date.now()}_${Math.random()}`, ...t, date: dateStr, completed: false, notes: '', completedAt: null });
+    }
+  });
+  DB.set('tasks_'+userEmail, tasks);
+}
+
+function getTasks() { return DB.get('tasks_'+(currentUser?.email||''), []); }
+function saveTasks(tasks) { DB.set('tasks_'+(currentUser?.email||''), tasks); }
+
+// ===================== APP INIT =====================
+function initApp() {
+  document.getElementById('auth-screen').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+  updateSidebarUser();
+  setGreeting();
+  setDailyQuote();
+  navigate('dashboard');
+}
+
+function updateSidebarUser() {
+  if (!currentUser) return;
+  const av = currentUser.name.charAt(0).toUpperCase();
+  document.getElementById('sidebar-avatar').textContent = av;
+  document.getElementById('sidebar-name').textContent = currentUser.name;
+  document.getElementById('sidebar-streak').textContent = `🔥 ${currentUser.streak} day streak`;
+}
+
+function setGreeting() {
+  const h = new Date().getHours();
+  const g = h<12?'Morning':h<17?'Afternoon':'Evening';
+  const el = document.getElementById('greeting-time');
+  if (el) el.textContent = g;
+  const gn = document.getElementById('greeting-name');
+  if (gn && currentUser) gn.textContent = currentUser.name.split(' ')[0];
+  const td = document.getElementById('today-date');
+  if (td) td.textContent = new Date().toLocaleDateString('en-IN', {weekday:'long',year:'numeric',month:'long',day:'numeric'});
+}
+
+function setDailyQuote() {
+  const idx = new Date().getDate() % QUOTES.length;
+  const q = QUOTES[idx];
+  const qt = document.getElementById('quote-text');
+  const qa = document.getElementById('quote-author');
+  if (qt) qt.textContent = q.text;
+  if (qa) qa.textContent = '— ' + q.author;
+}
+
+// ===================== NAVIGATION =====================
+function navigate(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  const pg = document.getElementById('page-'+page);
+  if (pg) pg.classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n => {
+    if (n.getAttribute('onclick') && n.getAttribute('onclick').includes("'"+page+"'")) n.classList.add('active');
+  });
+  closeSidebar();
+  // Render page
+  switch(page) {
+    case 'dashboard': renderDashboard(); break;
+    case 'routine': renderRoutine(); break;
+    case 'tasks': renderTasksPage(); break;
+    case 'analytics': renderAnalytics(); break;
+    case 'dsa': renderDSA(); break;
+    case 'springboot': renderSpringBoot(); break;
+    case 'academics': renderAcademics(); break;
+    case 'health': renderHealth(); break;
+    case 'communication': renderCommunication(); break;
+    case 'pomodoro': renderPomodoro(); break;
+    case 'distraction': renderDistraction(); break;
+    case 'calendar': renderCalendar(); break;
+  }
+}
+
+// ===================== DASHBOARD =====================
+function renderDashboard() {
+  setGreeting();
+  const today = new Date().toISOString().split('T')[0];
+  const tasks = getTasks().filter(t => t.date === today);
+  const done = tasks.filter(t => t.completed).length;
+  const pct = tasks.length ? Math.round((done/tasks.length)*100) : 0;
+  const dsaAll = DB.get('dsa_'+(currentUser?.email||''), []);
+  const dsaWeek = dsaAll.filter(p => {
+    const d = new Date(p.date);
+    const now = new Date();
+    return (now - d) < 7*86400000;
+  }).length;
+
+  document.getElementById('stat-streak').textContent = currentUser?.streak || 0;
+  document.getElementById('stat-longest').textContent = 'Longest: '+(currentUser?.longestStreak||0);
+  document.getElementById('stat-done').textContent = done;
+  document.getElementById('stat-total-today').textContent = 'of '+tasks.length+' tasks';
+  document.getElementById('stat-dsa').textContent = dsaAll.length;
+  document.getElementById('stat-dsa-week').textContent = dsaWeek;
+  document.getElementById('stat-pct').textContent = pct+'%';
+
+  // Category progress
+  const cats = ['DSA','LeetCode','SpringBoot','Academics','Health','Communication'];
+  const colors = ['orange','blue','green','purple','cyan','gold'];
+  const icons = ['🧩','💻','🍃','🎓','💪','🗣️'];
+  const cp = document.getElementById('category-progress');
+  cp.innerHTML = cats.map((cat,i) => {
+    const ct = tasks.filter(t=>t.category===cat);
+    const cd = ct.filter(t=>t.completed).length;
+    const p = ct.length ? Math.round((cd/ct.length)*100) : 0;
+    return `<div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+        <span style="font-size:13px;font-weight:700">${icons[i]} ${cat}</span>
+        <span style="font-size:12px;color:var(--muted2);font-family:'JetBrains Mono',monospace">${cd}/${ct.length} · ${p}%</span>
+      </div>
+      <div class="prog-bar-wrap"><div class="prog-bar ${colors[i]}" style="width:${p}%"></div></div>
+    </div>`;
+  }).join('');
+
+  // Today tasks (first 6)
+  const tt = document.getElementById('today-tasks');
+  const todayTasksSorted = tasks.sort((a,b)=>(['morning','college','evening','night'].indexOf(a.timeSlot))-((['morning','college','evening','night'].indexOf(b.timeSlot))));
+  tt.innerHTML = todayTasksSorted.slice(0,8).map(t => taskItem(t)).join('') || '<div class="empty-state"><div class="icon">📋</div><p>No tasks for today yet.</p></div>';
+
+  // Saved note
+  const note = DB.get('note_'+today, '');
+  if (note) {
+    document.getElementById('saved-note').textContent = '📝 '+note;
+    document.getElementById('saved-note').style.display = 'block';
+  }
+
+  // Day number
+  const startDate = new Date(currentUser?.startDate || today);
+  const dayNum = Math.min(20, Math.max(1, Math.ceil((new Date()-startDate)/86400000)+1));
+  const dn = document.getElementById('day-number-display');
+  if (dn) dn.textContent = dayNum;
+}
+
+function taskItem(t, showDate=false) {
+  const catColors = {DSA:'blue',LeetCode:'blue',SpringBoot:'green',Academics:'purple',Health:'cyan',Communication:'gold'};
+  const slotColors = {morning:'orange',college:'blue',evening:'purple',night:'gray'};
+  return `<div class="task-item ${t.completed?'done':''}" onclick="toggleTask('${t.id}')">
+    <div class="task-check ${t.completed?'checked':''}">
+      ${t.completed?'<svg width="11" height="8" viewBox="0 0 11 8" fill="none"><path d="M1 4L4 7L10 1" stroke="white" stroke-width="2" stroke-linecap="round"/></svg>':''}
+    </div>
+    <div style="flex:1;min-width:0">
+      <div class="task-title">${t.title}</div>
+      <div class="task-meta">
+        <span class="badge badge-${catColors[t.category]||'gray'}">${t.category}</span>
+        <span class="badge badge-${slotColors[t.timeSlot]||'gray'}">🕐 ${t.timeSlot}</span>
+        ${t.priority==='high'?'<span class="badge badge-red">🔴 High</span>':''}
+        ${showDate?`<span class="badge badge-gray">${t.date}</span>`:''}
+      </div>
+    </div>
+  </div>`;
+}
+
+function toggleTask(id) {
+  const tasks = getTasks();
+  const t = tasks.find(x=>x.id===id);
+  if (!t) return;
+  t.completed = !t.completed;
+  t.completedAt = t.completed ? new Date().toISOString() : null;
+  saveTasks(tasks);
+  const active = document.querySelector('.page.active');
+  if (active?.id === 'page-dashboard') renderDashboard();
+  else if (active?.id === 'page-tasks') renderTasksPage();
+  toast(t.completed ? '✅ Task completed! Keep going!' : 'Task unchecked', t.completed?'success':'info');
+}
+
+function quickAddDSA() {
+  const name = document.getElementById('quick-dsa').value.trim();
+  if (!name) return toast('Enter a problem name', 'error');
+  const problems = DB.get('dsa_'+(currentUser?.email||''), []);
+  problems.push({ id: Date.now(), problemName: name, difficulty: 'Medium', topic: '', link: '', notes: '', date: new Date().toISOString().split('T')[0] });
+  DB.set('dsa_'+(currentUser?.email||''), problems);
+  document.getElementById('quick-dsa').value = '';
+  toast('🧩 Problem logged!', 'success');
+  renderDashboard();
+}
+
+function saveNote() {
+  const note = document.getElementById('quick-note').value.trim();
+  if (!note) return;
+  const today = new Date().toISOString().split('T')[0];
+  DB.set('note_'+today, note);
+  document.getElementById('saved-note').textContent = '📝 '+note;
+  document.getElementById('saved-note').style.display = 'block';
+  toast('Note saved!', 'success');
+}
+
+// ===================== ROUTINE =====================
+function renderRoutine() {
+  const today = new Date().toISOString().split('T')[0];
+  const tasks = getTasks().filter(t=>t.date===today);
+  const slots = [
+    {id:'morning', label:'Morning Block', time:'5:30 AM – 9:00 AM', icon:'🌅', color:'var(--accent)'},
+    {id:'college', label:'College Hours', time:'9:00 AM – 5:00 PM', icon:'🎓', color:'var(--blue)'},
+    {id:'evening', label:'Evening Block', time:'5:00 PM – 8:00 PM', icon:'🌆', color:'var(--purple)'},
+    {id:'night', label:'Night Block', time:'8:00 PM – 11:00 PM', icon:'🌙', color:'var(--cyan)'},
+  ];
+  const tl = document.getElementById('routine-timeline');
+  tl.innerHTML = slots.map(s => {
+    const st = tasks.filter(t=>t.timeSlot===s.id);
+    return `<div class="tl-block">
+      <div class="tl-dot" style="background:${s.color};border-color:var(--bg)">${s.icon}</div>
+      <div class="tl-time">${s.time}</div>
+      <div class="tl-title">${s.label} <span class="badge badge-gray" style="font-size:10px">${st.filter(t=>t.completed).length}/${st.length}</span></div>
+      <div class="tl-tasks">
+        ${st.length ? st.map(t=>`<div class="tl-task" style="border-left:3px solid ${t.completed?'var(--green)':'var(--border)'};opacity:${t.completed?0.6:1}">
+          ${t.completed?'✅ ':'🔲 '}<strong>${t.category}</strong>: ${t.title}
+        </div>`).join('') : '<div class="tl-task" style="color:var(--muted);font-size:12px">No tasks scheduled for this slot</div>'}
+      </div>
+    </div>`;
+  }).join('');
+
+  const startDate = new Date(currentUser?.startDate || today);
+  const dayNum = Math.min(20, Math.max(1, Math.ceil((new Date()-startDate)/86400000)+1));
+  const dn = document.getElementById('day-number-display');
+  if (dn) dn.textContent = dayNum;
+  const jp = document.getElementById('journey-progress');
+  if (jp) jp.style.width = (dayNum/20*100)+'%';
+}
+
+// ===================== TASKS PAGE =====================
+function renderTasksPage() {
+  const catFilter = document.getElementById('task-filter-cat')?.value || '';
+  const slotFilter = document.getElementById('task-filter-slot')?.value || '';
+  let tasks = getTasks();
+  if (catFilter) tasks = tasks.filter(t=>t.category===catFilter);
+  if (slotFilter) tasks = tasks.filter(t=>t.timeSlot===slotFilter);
+
+  // Group by day
+  const byDay = {};
+  tasks.forEach(t => {
+    const k = t.day || '?';
+    if (!byDay[k]) byDay[k] = { day: k, date: t.date, tasks: [] };
+    byDay[k].tasks.push(t);
+  });
+
+  const sortedDays = Object.values(byDay).sort((a,b)=>Number(a.day)-Number(b.day));
+  const today = new Date().toISOString().split('T')[0];
+
+  const container = document.getElementById('tasks-by-day');
+  container.innerHTML = sortedDays.map(group => {
+    const done = group.tasks.filter(t=>t.completed).length;
+    const pct = group.tasks.length ? Math.round(done/group.tasks.length*100) : 0;
+    const isToday = group.date === today;
+    return `<div class="card" style="margin-bottom:14px;${isToday?'border-color:var(--accent)':''}">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px">
+        <div>
+          <span style="font-size:15px;font-weight:800">Day ${group.day}</span>
+          ${isToday?'<span class="badge badge-orange" style="margin-left:8px">TODAY</span>':''}
+          <span class="badge badge-gray" style="margin-left:6px">${group.date}</span>
+        </div>
+        <span style="font-size:12px;color:${pct===100?'var(--green)':'var(--muted2)'};">${done}/${group.tasks.length} · ${pct}%</span>
+      </div>
+      <div class="prog-bar-wrap" style="margin-bottom:12px"><div class="prog-bar ${pct===100?'green':'orange'}" style="width:${pct}%"></div></div>
+      ${group.tasks.map(t=>taskItem(t)).join('')}
+    </div>`;
+  }).join('') || '<div class="empty-state"><div class="icon">📋</div><p>No tasks found. Generate your 20-day plan from the dashboard.</p></div>';
+}
+
+// ===================== ANALYTICS =====================
+let weeklyChart, categoryChart, dailyChart;
+function renderAnalytics() {
+  const tasks = getTasks();
+  const total = tasks.length;
+  const done = tasks.filter(t=>t.completed).length;
+  const pct = total ? Math.round(done/total*100) : 0;
+  document.getElementById('a-total-tasks').textContent = total;
+  document.getElementById('a-completion-rate').textContent = pct+'%';
+
+  // Best day
+  const byDate = {};
+  tasks.forEach(t => {
+    if (!byDate[t.date]) byDate[t.date] = {total:0,done:0};
+    byDate[t.date].total++;
+    if (t.completed) byDate[t.date].done++;
+  });
+  let bestDay = '—', bestPct = 0;
+  Object.entries(byDate).forEach(([d,s]) => {
+    const p = s.total?Math.round(s.done/s.total*100):0;
+    if (p>bestPct) { bestPct=p; bestDay=d+' ('+p+'%)'; }
+  });
+  document.getElementById('a-best-day').textContent = bestDay;
+
+  // Weekly chart
+  const days7 = [];
+  for (let i=6;i>=0;i--) {
+    const d = new Date(); d.setDate(d.getDate()-i);
+    const ds = d.toISOString().split('T')[0];
+    const s = byDate[ds] || {total:0,done:0};
+    days7.push({ label: d.toLocaleDateString('en',{weekday:'short'}), pct: s.total?Math.round(s.done/s.total*100):0 });
+  }
+
+  const ctx1 = document.getElementById('chart-weekly').getContext('2d');
+  if (weeklyChart) weeklyChart.destroy();
+  weeklyChart = new Chart(ctx1, {
+    type: 'bar',
+    data: { labels: days7.map(d=>d.label), datasets: [{ label: 'Completion %', data: days7.map(d=>d.pct), backgroundColor: 'rgba(249,115,22,0.7)', borderRadius: 8, borderSkipped: false }] },
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { max: 100, grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#64748b', callback: v=>v+'%' } }, x: { grid: { display: false }, ticks: { color: '#64748b' } } } }
+  });
+
+  // Category chart
+  const cats = ['DSA','LeetCode','SpringBoot','Academics','Health','Communication'];
+  const catData = cats.map(c => { const ct = tasks.filter(t=>t.category===c); return ct.length?Math.round(ct.filter(t=>t.completed).length/ct.length*100):0; });
+  const ctx2 = document.getElementById('chart-category').getContext('2d');
+  if (categoryChart) categoryChart.destroy();
+  categoryChart = new Chart(ctx2, {
+    type: 'doughnut',
+    data: { labels: cats, datasets: [{ data: catData, backgroundColor: ['rgba(96,165,250,0.8)','rgba(99,102,241,0.8)','rgba(34,197,94,0.8)','rgba(167,139,250,0.8)','rgba(34,211,238,0.8)','rgba(245,158,11,0.8)'], borderWidth: 0, hoverOffset: 6 }] },
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: '#94a3b8', font: { size: 11 }, padding: 10, boxWidth: 12 } } }, cutout: '65%' }
+  });
+
+  // Daily chart (14 days)
+  const days14 = [];
+  for (let i=13;i>=0;i--) {
+    const d = new Date(); d.setDate(d.getDate()-i);
+    const ds = d.toISOString().split('T')[0];
+    const s = byDate[ds] || {total:0,done:0};
+    days14.push({ label: d.getDate()+'', done: s.done, total: s.total });
+  }
+  const ctx3 = document.getElementById('chart-daily').getContext('2d');
+  if (dailyChart) dailyChart.destroy();
+  dailyChart = new Chart(ctx3, {
+    type: 'line',
+    data: { labels: days14.map(d=>d.label), datasets: [
+      { label: 'Done', data: days14.map(d=>d.done), borderColor: 'rgba(34,197,94,1)', backgroundColor: 'rgba(34,197,94,0.1)', tension: 0.4, fill: true, pointRadius: 3 },
+      { label: 'Total', data: days14.map(d=>d.total), borderColor: 'rgba(96,165,250,0.6)', backgroundColor: 'transparent', tension: 0.4, borderDash: [4,4], pointRadius: 2 }
+    ]},
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: '#94a3b8', font: { size: 11 }, boxWidth: 12 } } }, scales: { y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#64748b' } }, x: { grid: { display: false }, ticks: { color: '#64748b' } } } }
+  });
+}
+
+// ===================== DSA =====================
+let commRating = 3;
+
+function renderDSA() {
+  const problems = DB.get('dsa_'+(currentUser?.email||''), []);
+  const search = document.getElementById('dsa-search')?.value?.toLowerCase() || '';
+  const filtered = problems.filter(p => p.problemName.toLowerCase().includes(search) || (p.topic||'').toLowerCase().includes(search));
+  
+  document.getElementById('dsa-total').textContent = problems.length;
+  document.getElementById('dsa-easy').textContent = problems.filter(p=>p.difficulty==='Easy').length;
+  document.getElementById('dsa-med').textContent = problems.filter(p=>p.difficulty==='Medium').length;
+  document.getElementById('dsa-hard').textContent = problems.filter(p=>p.difficulty==='Hard').length;
+  const bar = document.getElementById('dsa-100-bar');
+  if (bar) bar.style.width = Math.min(100, problems.length)+'%';
+  document.getElementById('dsa-100-text').textContent = problems.length+' / 100';
+
+  const list = document.getElementById('dsa-list');
+  list.innerHTML = filtered.length ? filtered.slice().reverse().map(p => `<div class="problem-row">
+    <div class="diff-dot diff-${p.difficulty.toLowerCase()}"></div>
+    <div style="flex:1;min-width:0">
+      <div style="font-size:14px;font-weight:700">${p.problemName}</div>
+      <div style="display:flex;gap:6px;margin-top:4px;flex-wrap:wrap">
+        <span class="badge badge-${p.difficulty==='Easy'?'green':p.difficulty==='Hard'?'red':'gold'}">${p.difficulty}</span>
+        ${p.topic?`<span class="badge badge-gray">${p.topic}</span>`:''}
+        <span class="badge badge-gray">${p.date}</span>
+      </div>
+    </div>
+    <div style="display:flex;gap:6px">
+      ${p.link?`<a href="${p.link}" target="_blank" style="color:var(--blue);font-size:12px;font-weight:700;text-decoration:none">LC →</a>`:''}
+      <button onclick="deleteDSA('${p.id}')" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:14px">🗑</button>
+    </div>
+  </div>`).join('') : '<div class="empty-state"><div class="icon">🧩</div><p>No problems logged yet. Start solving!</p></div>';
+}
+
+function addDSAProblem() {
+  const name = document.getElementById('dsa-name').value.trim();
+  if (!name) return toast('Enter problem name', 'error');
+  const problems = DB.get('dsa_'+(currentUser?.email||''), []);
+  problems.push({ id: Date.now()+'', problemName: name, difficulty: document.getElementById('dsa-diff').value, topic: document.getElementById('dsa-topic').value, link: document.getElementById('dsa-link').value, notes: document.getElementById('dsa-notes').value, date: new Date().toISOString().split('T')[0] });
+  DB.set('dsa_'+(currentUser?.email||''), problems);
+  closeModal('modal-dsa');
+  ['dsa-name','dsa-topic','dsa-link','dsa-notes'].forEach(id => document.getElementById(id).value='');
+  renderDSA();
+  toast('🧩 Problem logged!', 'success');
+}
+
+function deleteDSA(id) {
+  let problems = DB.get('dsa_'+(currentUser?.email||''), []);
+  problems = problems.filter(p=>p.id!==id);
+  DB.set('dsa_'+(currentUser?.email||''), problems);
+  renderDSA();
+  toast('Deleted', 'info');
+}
+
+// ===================== SPRING BOOT =====================
+const SB_ROADMAP = ['Core Java Review','Spring Core & IoC','Spring MVC','Spring Boot Setup','REST APIs','Spring Data JPA','Spring Security','JWT Auth','Microservices','Docker','CI/CD','AWS Deployment'];
+
+function renderSpringBoot() {
+  const topics = DB.get('sb_'+(currentUser?.email||''), []);
+  document.getElementById('sb-total').textContent = topics.length;
+  document.getElementById('sb-done').textContent = topics.filter(t=>t.completed).length;
+
+  const roadmap = document.getElementById('sb-roadmap');
+  roadmap.innerHTML = SB_ROADMAP.map((r,i) => {
+    const done = topics.find(t=>t.topic.toLowerCase().includes(r.toLowerCase().split(' ')[0].toLowerCase()))?.completed;
+    return `<div style="display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--surface);border-radius:8px">
+      <div style="width:24px;height:24px;border-radius:50%;background:${done?'var(--green)':'var(--border)'};display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0">${done?'✓':(i+1)}</div>
+      <span style="font-size:13px;font-weight:600;color:${done?'var(--green)':'var(--text)'}">${r}</span>
+    </div>`;
+  }).join('');
+
+  const list = document.getElementById('sb-list');
+  list.innerHTML = topics.length ? topics.slice().reverse().map(t => `<div class="problem-row">
+    <div style="flex:1">
+      <div style="font-size:14px;font-weight:700">${t.topic}</div>
+      ${t.subtopic?`<div style="font-size:12px;color:var(--muted2);margin-top:2px">${t.subtopic}</div>`:''}
+      <div style="display:flex;gap:6px;margin-top:4px">
+        <span class="badge badge-${t.completed?'green':'gray'}">${t.completed?'✅ Done':'⏳ In Progress'}</span>
+        <span class="badge badge-gray">${t.date}</span>
+      </div>
+    </div>
+    <div style="display:flex;gap:6px;align-items:center">
+      ${t.githubLink?`<a href="${t.githubLink}" target="_blank" style="color:var(--blue);font-size:12px;font-weight:700;text-decoration:none">GH →</a>`:''}
+      <button onclick="toggleSBTopic('${t.id}')" style="background:none;border:none;cursor:pointer;font-size:16px">${t.completed?'↩':'✓'}</button>
+      <button onclick="deleteSB('${t.id}')" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:14px">🗑</button>
+    </div>
+  </div>`).join('') : '<div class="empty-state"><div class="icon">🍃</div><p>No Spring Boot topics logged yet.</p></div>';
+}
+
+function addSBTopic() {
+  const topic = document.getElementById('sb-topic').value.trim();
+  if (!topic) return toast('Enter topic name', 'error');
+  const topics = DB.get('sb_'+(currentUser?.email||''), []);
+  topics.push({ id: Date.now()+'', topic, subtopic: document.getElementById('sb-sub').value, githubLink: document.getElementById('sb-link').value, notes: document.getElementById('sb-notes').value, completed: false, date: new Date().toISOString().split('T')[0] });
+  DB.set('sb_'+(currentUser?.email||''), topics);
+  closeModal('modal-sb');
+  renderSpringBoot();
+  toast('🍃 Topic added!', 'success');
+}
+
+function toggleSBTopic(id) {
+  const topics = DB.get('sb_'+(currentUser?.email||''), []);
+  const t = topics.find(x=>x.id===id);
+  if (t) t.completed = !t.completed;
+  DB.set('sb_'+(currentUser?.email||''), topics);
+  renderSpringBoot();
+}
+
+function deleteSB(id) {
+  let topics = DB.get('sb_'+(currentUser?.email||''), []);
+  topics = topics.filter(t=>t.id!==id);
+  DB.set('sb_'+(currentUser?.email||''), topics);
+  renderSpringBoot();
+}
+
+// ===================== ACADEMICS =====================
+const SUBJECTS_SHORT = {'DAA (Design & Analysis of Algorithms)':'DAA','DBMS':'DBMS','OS (Operating Systems)':'OS','CN (Computer Networks)':'CN','Software Engineering':'SE','Other':'Other'};
+
+function renderAcademics() {
+  const entries = DB.get('acad_'+(currentUser?.email||''), []);
+  const bySubject = {};
+  entries.forEach(e => {
+    const s = SUBJECTS_SHORT[e.subject]||e.subject;
+    if (!bySubject[s]) bySubject[s] = 0;
+    bySubject[s] += Number(e.hours||0);
+  });
+
+  const subs = document.getElementById('acad-subject-stats');
+  subs.innerHTML = Object.entries(bySubject).map(([s,h]) => `<div>
+    <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+      <span style="font-size:13px;font-weight:700">${s}</span>
+      <span style="font-size:12px;color:var(--muted2);font-family:'JetBrains Mono',monospace">${h.toFixed(1)}h</span>
+    </div>
+    <div class="prog-bar-wrap"><div class="prog-bar purple" style="width:${Math.min(100,h/20*100)}%"></div></div>
+  </div>`).join('') || '<p style="color:var(--muted);font-size:13px">No sessions logged yet.</p>';
+
+  const list = document.getElementById('acad-list');
+  list.innerHTML = entries.length ? entries.slice().reverse().slice(0,10).map(e => `<div class="task-item" style="cursor:default">
+    <div style="font-size:18px">📚</div>
+    <div>
+      <div style="font-size:14px;font-weight:700">${e.topic}</div>
+      <div class="task-meta">
+        <span class="badge badge-purple">${SUBJECTS_SHORT[e.subject]||e.subject}</span>
+        <span class="badge badge-gray">${e.hours}h · ${e.date}</span>
+      </div>
+      ${e.notes?`<div style="font-size:12px;color:var(--muted2);margin-top:4px">${e.notes}</div>`:''}
+    </div>
+  </div>`).join('') : '<div class="empty-state" style="padding:24px"><div class="icon">📚</div><p>No sessions yet</p></div>';
+}
+
+function addAcadEntry() {
+  const topic = document.getElementById('acad-topic').value.trim();
+  const hours = document.getElementById('acad-hours').value;
+  if (!topic || !hours) return toast('Fill topic and hours', 'error');
+  const entries = DB.get('acad_'+(currentUser?.email||''), []);
+  entries.push({ id: Date.now()+'', subject: document.getElementById('acad-subject').value, topic, hours: Number(hours), notes: document.getElementById('acad-notes').value, date: new Date().toISOString().split('T')[0] });
+  DB.set('acad_'+(currentUser?.email||''), entries);
+  document.getElementById('acad-topic').value = '';
+  document.getElementById('acad-hours').value = '';
+  document.getElementById('acad-notes').value = '';
+  renderAcademics();
+  toast('📚 Session logged!', 'success');
+}
+
+// ===================== HEALTH =====================
+let exerciseDone = false, currentMood = '🙂';
+
+function renderHealth() {
+  const today = new Date().toISOString().split('T')[0];
+  const h = DB.get('health_'+today+(currentUser?.email||''), { water: 0, sleep: 7, sleepQuality: 'good', exercise: false, exMins: 0, mood: '🙂' });
+  
+  const drops = document.getElementById('water-drops');
+  drops.innerHTML = Array.from({length:8},(_,i) => `<div class="water-drop ${i<h.water?'filled':''}" onclick="setWater(${i+1})">💧</div>`).join('');
+  document.getElementById('water-count').textContent = h.water;
+  document.getElementById('sleep-hours').value = h.sleep || '';
+  document.getElementById('sleep-quality').value = h.sleepQuality || 'good';
+  document.getElementById('ex-mins').value = h.exMins || '';
+  exerciseDone = h.exercise;
+  updateExerciseBtns();
+  currentMood = h.mood || '🙂';
+  updateMoodBtns();
+
+  const history = DB.get('health_history_'+(currentUser?.email||''), []);
+  const hist = document.getElementById('health-history');
+  hist.innerHTML = history.slice(-7).reverse().map(d => `<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 12px;background:var(--surface);border-radius:8px;font-size:12px">
+    <span style="font-weight:700">${d.date}</span>
+    <span>💧${d.water}/8</span>
+    <span>😴${d.sleep}h</span>
+    <span>${d.exercise?'🏃✓':'🏃✗'}</span>
+    <span>${d.mood}</span>
+  </div>`).join('') || '<p style="color:var(--muted);font-size:12px;padding:8px">No history yet</p>';
+}
+
+function setWater(n) {
+  const today = new Date().toISOString().split('T')[0];
+  const key = 'health_'+today+(currentUser?.email||'');
+  const h = DB.get(key, {water:0});
+  h.water = h.water===n ? n-1 : n;
+  DB.set(key, h);
+  document.getElementById('water-count').textContent = h.water;
+  const drops = document.getElementById('water-drops');
+  drops.querySelectorAll('.water-drop').forEach((d,i) => d.classList.toggle('filled', i<h.water));
+  if (h.water===8) toast('💧 Hydration goal reached!', 'success');
+}
+
+function setExercise(done) {
+  exerciseDone = done;
+  updateExerciseBtns();
+}
+
+function updateExerciseBtns() {
+  document.getElementById('ex-yes').style.background = exerciseDone ? 'rgba(34,197,94,0.3)' : '';
+  document.getElementById('ex-no').style.background = !exerciseDone ? 'rgba(248,113,113,0.1)' : '';
+}
+
+function setMood(m) {
+  currentMood = m;
+  updateMoodBtns();
+}
+
+function updateMoodBtns() {
+  document.querySelectorAll('.mood-btn').forEach(b => {
+    b.style.borderColor = b.textContent===currentMood ? 'var(--accent)' : 'transparent';
+    b.style.background = b.textContent===currentMood ? 'rgba(249,115,22,0.1)' : 'none';
+  });
+}
+
+function saveHealth() {
+  const today = new Date().toISOString().split('T')[0];
+  const key = 'health_'+today+(currentUser?.email||'');
+  const h = DB.get(key, {water:0});
+  h.sleep = Number(document.getElementById('sleep-hours').value)||7;
+  h.sleepQuality = document.getElementById('sleep-quality').value;
+  h.exercise = exerciseDone;
+  h.exMins = Number(document.getElementById('ex-mins').value)||0;
+  h.mood = currentMood;
+  h.date = today;
+  DB.set(key, h);
+
+  const history = DB.get('health_history_'+(currentUser?.email||''), []);
+  const existing = history.findIndex(x=>x.date===today);
+  const record = { date:today, water:h.water, sleep:h.sleep, exercise:h.exercise, mood:h.mood };
+  if (existing>=0) history[existing]=record; else history.push(record);
+  DB.set('health_history_'+(currentUser?.email||''), history);
+  toast('💪 Health data saved!', 'success');
+  renderHealth();
+}
+
+// ===================== COMMUNICATION =====================
+function renderCommunication() {
+  const logs = DB.get('comm_'+(currentUser?.email||''), []);
+  document.getElementById('comm-total').textContent = logs.length;
+  const avg = logs.length ? (logs.reduce((s,l)=>s+(l.rating||3),0)/logs.length).toFixed(1) : '0.0';
+  document.getElementById('comm-avg').textContent = avg;
+
+  // Streak
+  let streak = 0;
+  const sorted = [...logs].sort((a,b)=>b.date.localeCompare(a.date));
+  let checkDate = new Date();
+  for (let i=0;i<sorted.length;i++) {
+    const ld = sorted[i].date;
+    const expected = checkDate.toISOString().split('T')[0];
+    if (ld===expected) { streak++; checkDate.setDate(checkDate.getDate()-1); }
+    else break;
+  }
+  document.getElementById('comm-streak').textContent = streak;
+
+  const list = document.getElementById('comm-list');
+  list.innerHTML = logs.length ? logs.slice().reverse().map(l => `<div class="task-item" style="cursor:default">
+    <div style="font-size:22px">🗣️</div>
+    <div style="flex:1">
+      <div style="font-size:14px;font-weight:700">${l.topic}</div>
+      <div class="task-meta">
+        <span class="badge badge-purple">${l.type}</span>
+        <span class="badge badge-gold">${'⭐'.repeat(l.rating||3)}</span>
+        <span class="badge badge-gray">${l.date}</span>
+      </div>
+      ${l.notes?`<div style="font-size:12px;color:var(--muted2);margin-top:4px">${l.notes}</div>`:''}
+    </div>
+  </div>`).join('') : '<div class="empty-state"><div class="icon">🗣️</div><p>No speaking sessions logged yet. Start speaking!</p></div>';
+}
+
+function setRating(r) {
+  commRating = r;
+  document.querySelectorAll('#comm-stars .star').forEach((s,i) => { s.style.opacity = i<r?'1':'0.3'; });
+}
+
+function addCommLog() {
+  const topic = document.getElementById('comm-topic').value.trim();
+  if (!topic) return toast('Enter topic spoken', 'error');
+  const logs = DB.get('comm_'+(currentUser?.email||''), []);
+  logs.push({ id:Date.now()+'', topic, type: document.getElementById('comm-type').value, rating: commRating, notes: document.getElementById('comm-notes').value, date: new Date().toISOString().split('T')[0] });
+  DB.set('comm_'+(currentUser?.email||''), logs);
+  closeModal('modal-comm');
+  document.getElementById('comm-topic').value = '';
+  document.getElementById('comm-notes').value = '';
+  renderCommunication();
+  toast('🗣️ Session logged!', 'success');
+}
+
+// ===================== POMODORO =====================
+let pomoInterval = null, pomoTime = 25*60, pomoTotal = 25*60, pomoRunning = false;
+let pomoMode = 'focus', pomoDailyCount = 0, pomoDailyMins = 0;
+
+function setPomoMode(mode) {
+  pomoMode = mode;
+  const times = {focus:25*60, short:5*60, long:15*60};
+  pomoTime = pomoTotal = times[mode];
+  document.querySelectorAll('[id^="pomo-mode"]').forEach(b=>b.className='btn btn-ghost');
+  const active = document.getElementById('pomo-mode-'+mode);
+  if (active) active.style.cssText = 'background:rgba(249,115,22,0.15);color:var(--accent);border:1px solid rgba(249,115,22,0.3)';
+  updatePomoDisplay();
+  if (pomoRunning) { clearInterval(pomoInterval); pomoRunning = false; document.getElementById('pomo-btn').textContent='▶ Start'; }
+}
+
+function updatePomoDisplay() {
+  const m = Math.floor(pomoTime/60).toString().padStart(2,'0');
+  const s = (pomoTime%60).toString().padStart(2,'0');
+  document.getElementById('pomo-display').textContent = m+':'+s;
+  document.getElementById('pomo-phase').textContent = pomoMode==='focus'?'FOCUS':pomoMode==='short'?'SHORT BREAK':'LONG BREAK';
+  const circ = document.getElementById('pomo-circle');
+  const circumference = 2*Math.PI*88;
+  circ.style.strokeDashoffset = circumference*(1-pomoTime/pomoTotal);
+  circ.style.stroke = pomoMode==='focus'?'var(--accent)':pomoMode==='short'?'var(--green)':'var(--purple)';
+
+  if (document.getElementById('focus-timer')) {
+    document.getElementById('focus-timer').textContent = m+':'+s;
+  }
+}
+
+function togglePomodoro() {
+  if (pomoRunning) {
+    clearInterval(pomoInterval); pomoRunning=false;
+    document.getElementById('pomo-btn').textContent='▶ Start';
+  } else {
+    pomoRunning=true;
+    document.getElementById('pomo-btn').textContent='⏸ Pause';
+    pomoInterval = setInterval(()=>{
+      pomoTime--;
+      updatePomoDisplay();
+      if (pomoTime<=0) {
+        clearInterval(pomoInterval); pomoRunning=false;
+        document.getElementById('pomo-btn').textContent='▶ Start';
+        if (pomoMode==='focus') {
+          pomoDailyCount++;
+          pomoDailyMins += 25;
+          const total = DB.get('pomo_total_'+(currentUser?.email||''), 0)+1;
+          DB.set('pomo_total_'+(currentUser?.email||''), total);
+          document.getElementById('pomo-sessions').textContent = pomoDailyCount;
+          document.getElementById('pomo-mins').textContent = pomoDailyMins;
+          document.getElementById('pomo-total-sessions').textContent = total;
+          toast('🍅 Focus session complete! Take a break.', 'success');
+        }
+        pomoTime=pomoTotal;
+        updatePomoDisplay();
+      }
+    },1000);
+  }
+}
+
+function resetPomodoro() {
+  clearInterval(pomoInterval); pomoRunning=false;
+  document.getElementById('pomo-btn').textContent='▶ Start';
+  const times = {focus:25*60,short:5*60,long:15*60};
+  pomoTime=pomoTotal=times[pomoMode];
+  updatePomoDisplay();
+}
+
+function renderPomodoro() {
+  updatePomoDisplay();
+  document.getElementById('pomo-sessions').textContent = pomoDailyCount;
+  document.getElementById('pomo-mins').textContent = pomoDailyMins;
+  document.getElementById('pomo-total-sessions').textContent = DB.get('pomo_total_'+(currentUser?.email||''), 0);
+
+  const today = new Date().toISOString().split('T')[0];
+  const tasks = getTasks().filter(t=>t.date===today && !t.completed);
+  const sel = document.getElementById('pomo-task-select');
+  sel.innerHTML = '<option value="">Select a task to focus on...</option>' + tasks.map(t=>`<option value="${t.id}">${t.category}: ${t.title.slice(0,50)}</option>`).join('');
+}
+
+// ===================== DISTRACTION =====================
+function renderDistraction() {
+  const today = new Date().toISOString().split('T')[0];
+  const data = DB.get('distract_'+today+(currentUser?.email||''), {phoneHours:0, socialMins:0, distractedBy:'', focusScore:7});
+  document.getElementById('phone-hours').value = data.phoneHours||'';
+  document.getElementById('social-mins').value = data.socialMins||'';
+  document.getElementById('distracted-by').value = data.distractedBy||'';
+  document.getElementById('focus-score').value = data.focusScore||7;
+  document.getElementById('focus-score-display').textContent = data.focusScore||7;
+
+  document.getElementById('focus-score').oninput = function() {
+    document.getElementById('focus-score-display').textContent = this.value;
+  };
+
+  const limit = currentUser?.phoneLimit||2;
+  document.getElementById('phone-limit').value = limit;
+  document.getElementById('phone-limit-display').textContent = limit+' hours';
+  const warning = document.getElementById('phone-warning');
+  warning.style.display = (data.phoneHours||0) > limit ? 'block' : 'none';
+
+  const history = DB.get('distract_history_'+(currentUser?.email||''), []);
+  const hist = document.getElementById('distraction-history');
+  hist.innerHTML = history.slice(-7).reverse().map(d=>`<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 12px;background:var(--surface);border-radius:8px;font-size:12px;margin-bottom:6px">
+    <span style="font-weight:700">${d.date}</span>
+    <span>📱 ${d.phoneHours}h</span>
+    <span>🎯 Focus: ${d.focusScore}/10</span>
+  </div>`).join('') || '<p style="color:var(--muted);font-size:12px;padding:8px">No history yet</p>';
+}
+
+function saveDistraction() {
+  const today = new Date().toISOString().split('T')[0];
+  const data = {
+    phoneHours: Number(document.getElementById('phone-hours').value)||0,
+    socialMins: Number(document.getElementById('social-mins').value)||0,
+    distractedBy: document.getElementById('distracted-by').value,
+    focusScore: Number(document.getElementById('focus-score').value)||7,
+    date: today,
+  };
+  DB.set('distract_'+today+(currentUser?.email||''), data);
+  const history = DB.get('distract_history_'+(currentUser?.email||''), []);
+  const idx = history.findIndex(x=>x.date===today);
+  if (idx>=0) history[idx]=data; else history.push(data);
+  DB.set('distract_history_'+(currentUser?.email||''), history);
+
+  const limit = Number(document.getElementById('phone-limit').value)||2;
+  document.getElementById('phone-warning').style.display = data.phoneHours > limit ? 'block' : 'none';
+  toast('📵 Distraction data saved!', 'success');
+  renderDistraction();
+}
+
+function updatePhoneLimit() {
+  const v = document.getElementById('phone-limit').value;
+  document.getElementById('phone-limit-display').textContent = v+' hours';
+  if (currentUser) {
+    const users = DB.get('users', {});
+    users[currentUser.email].phoneLimit = Number(v);
+    currentUser.phoneLimit = Number(v);
+    DB.set('users', users);
+  }
+}
+
+// ===================== CALENDAR =====================
+let calYear = new Date().getFullYear(), calMonth = new Date().getMonth();
+
+function renderCalendar() {
+  const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  document.getElementById('cal-title').textContent = months[calMonth]+' '+calYear;
+  const firstDay = new Date(calYear,calMonth,1).getDay();
+  const daysInMonth = new Date(calYear,calMonth+1,0).getDate();
+  const today = new Date().toISOString().split('T')[0];
+  const tasks = getTasks();
+  const byDate = {};
+  tasks.forEach(t => {
+    if (!byDate[t.date]) byDate[t.date]={total:0,done:0};
+    byDate[t.date].total++;
+    if (t.completed) byDate[t.date].done++;
+  });
+
+  let html = '';
+  for (let i=0;i<firstDay;i++) html += '<div class="cal-day empty"></div>';
+  for (let d=1;d<=daysInMonth;d++) {
+    const ds = `${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const s = byDate[ds];
+    const pct = s?.total ? Math.round(s.done/s.total*100) : -1;
+    let cls = 'cal-day';
+    if (ds===today) cls+=' today';
+    if (pct>=80) cls+=' completed';
+    else if (pct>=30) cls+=' partial';
+    html += `<div class="${cls}" title="${pct>=0?pct+'% complete':'No tasks'}">${d}</div>`;
+  }
+  document.getElementById('cal-grid').innerHTML = html;
+}
+
+function changeMonth(dir) {
+  calMonth += dir;
+  if (calMonth<0){calMonth=11;calYear--;}
+  if (calMonth>11){calMonth=0;calYear++;}
+  renderCalendar();
+}
+
+// ===================== FOCUS MODE =====================
+let focusTimerInterval = null, focusTime = 25*60, focusRunning = false;
+
+function enterFocusMode() {
+  const today = new Date().toISOString().split('T')[0];
+  const tasks = getTasks().filter(t=>t.date===today&&!t.completed);
+  const task = tasks[0];
+  document.getElementById('focus-task').textContent = task ? task.title : 'All done! Great work today!';
+  document.getElementById('focus-category').textContent = task ? task.category : '🎉 Complete';
+  document.getElementById('focus-mode').classList.add('active');
+  resetFocusTimer();
+}
+
+function exitFocusMode() {
+  document.getElementById('focus-mode').classList.remove('active');
+  clearInterval(focusTimerInterval); focusRunning=false;
+  document.getElementById('focus-start-btn').textContent='▶ Start';
+}
+
+function toggleFocusTimer() {
+  if (focusRunning) {
+    clearInterval(focusTimerInterval); focusRunning=false;
+    document.getElementById('focus-start-btn').textContent='▶ Start';
+  } else {
+    focusRunning=true;
+    document.getElementById('focus-start-btn').textContent='⏸ Pause';
+    focusTimerInterval = setInterval(()=>{
+      focusTime--;
+      const m=Math.floor(focusTime/60).toString().padStart(2,'0');
+      const s=(focusTime%60).toString().padStart(2,'0');
+      document.getElementById('focus-timer').textContent=m+':'+s;
+      if (focusTime<=0) {
+        clearInterval(focusTimerInterval); focusRunning=false;
+        document.getElementById('focus-start-btn').textContent='▶ Start';
+        focusTime=25*60;
+        document.getElementById('focus-timer').textContent='25:00';
+        toast('🍅 25 minutes done! Take a 5-minute break.', 'success');
+      }
+    },1000);
+  }
+}
+
+function resetFocusTimer() {
+  clearInterval(focusTimerInterval); focusRunning=false;
+  focusTime=25*60;
+  document.getElementById('focus-timer').textContent='25:00';
+  document.getElementById('focus-start-btn').textContent='▶ Start';
+}
+
+// ===================== THEME =====================
+function toggleTheme() {
+  const isLight = document.body.classList.toggle('light');
+  document.getElementById('theme-icon').textContent = isLight ? '🌙' : '☀️';
+  document.getElementById('theme-label').textContent = isLight ? 'Dark Mode' : 'Light Mode';
+  DB.set('theme', isLight?'light':'dark');
+}
+
+// ===================== MODALS =====================
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+document.querySelectorAll('.modal-overlay').forEach(m => m.addEventListener('click', e => { if(e.target===m) m.classList.remove('open'); }));
+
+// ===================== MOBILE SIDEBAR =====================
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('sidebar-overlay').classList.toggle('open');
+}
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sidebar-overlay').classList.remove('open');
+}
+
+// ===================== TOAST =====================
+function toast(msg, type='info') {
+  const c = document.getElementById('toast-container');
+  const el = document.createElement('div');
+  el.className = `toast ${type}`;
+  el.innerHTML = `<span>${type==='success'?'✅':type==='error'?'❌':'ℹ️'}</span> ${msg}`;
+  c.appendChild(el);
+  setTimeout(()=>{ el.style.animation='slideOut 0.3s ease forwards'; setTimeout(()=>el.remove(),300); }, 3000);
+}
+
+// ===================== EXPORT PDF =====================
+function exportReport() {
+  const tasks = getTasks();
+  const done = tasks.filter(t=>t.completed).length;
+  const pct = tasks.length ? Math.round(done/tasks.length*100) : 0;
+  const dsa = DB.get('dsa_'+(currentUser?.email||''), []);
+  const sb = DB.get('sb_'+(currentUser?.email||''), []);
+  const comm = DB.get('comm_'+(currentUser?.email||''), []);
+  const today = new Date().toLocaleDateString('en-IN',{year:'numeric',month:'long',day:'numeric'});
+
+  const report = `
+FOCUSFORGE — PROGRESS REPORT
+==============================
+Generated: ${today}
+Student: ${currentUser?.name || 'Student'}
+Current Streak: ${currentUser?.streak || 0} days
+Longest Streak: ${currentUser?.longestStreak || 0} days
+
+TASK COMPLETION
+---------------
+Total Tasks: ${tasks.length}
+Completed: ${done}
+Overall Rate: ${pct}%
+
+BY CATEGORY:
+${['DSA','LeetCode','SpringBoot','Academics','Health','Communication'].map(c => {
+  const ct = tasks.filter(t=>t.category===c);
+  const cd = ct.filter(t=>t.completed).length;
+  return `  ${c}: ${cd}/${ct.length} (${ct.length?Math.round(cd/ct.length*100):0}%)`;
+}).join('\n')}
+
+DSA TRACKER
+-----------
+Total Problems Solved: ${dsa.length}
+Easy: ${dsa.filter(p=>p.difficulty==='Easy').length}
+Medium: ${dsa.filter(p=>p.difficulty==='Medium').length}
+Hard: ${dsa.filter(p=>p.difficulty==='Hard').length}
+
+Recent Problems:
+${dsa.slice(-5).map(p=>`  - ${p.problemName} [${p.difficulty}] · ${p.date}`).join('\n')}
+
+SPRING BOOT
+-----------
+Topics Logged: ${sb.length}
+Completed: ${sb.filter(t=>t.completed).length}
+
+COMMUNICATION
+-------------
+Sessions: ${comm.length}
+Avg Rating: ${comm.length?(comm.reduce((s,l)=>s+(l.rating||3),0)/comm.length).toFixed(1):0}/5
+
+==============================
+Keep grinding! — FocusForge ⚡
+  `.trim();
+
+  const blob = new Blob([report], {type:'text/plain'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `FocusForge_Report_${new Date().toISOString().split('T')[0]}.txt`;
+  a.click();
+  toast('📄 Report exported!', 'success');
+}
+
+// ===================== STARTUP =====================
+(function init() {
+  // Restore theme
+  if (DB.get('theme')==='light') { document.body.classList.add('light'); document.getElementById('theme-icon').textContent='🌙'; document.getElementById('theme-label').textContent='Dark Mode'; }
+  
+  // Check session
+  const session = DB.get('session');
+  if (session) {
+    const users = DB.get('users', {});
+    if (users[session]) {
+      loginUser(users[session]);
+      return;
+    }
+  }
+  document.getElementById('auth-screen').style.display = 'flex';
+
+  // Demo: pre-fill login
+  document.getElementById('login-email').value = '';
+  document.getElementById('login-pass').value = '';
+})();
+</script>
+</body>
+</html>
