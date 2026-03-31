@@ -290,6 +290,7 @@
       flex-direction: column;
       gap: 18px;
       min-height: 720px;
+      position: relative;
     }
     .panel-top {
       background: rgba(255,255,255,0.92);
@@ -403,6 +404,246 @@
       text-decoration: none;
       font-weight: 800;
     }
+    .showcase {
+      position: relative;
+      flex: 1;
+      min-height: 0;
+      border: 1px solid var(--border);
+      border-radius: 30px;
+      background:
+        radial-gradient(circle at 22% 20%, rgba(255,122,168,0.16), transparent 25%),
+        radial-gradient(circle at 80% 18%, rgba(139,188,255,0.15), transparent 24%),
+        linear-gradient(180deg, rgba(255,255,255,0.96), rgba(255,243,248,0.98));
+      overflow: hidden;
+      box-shadow: 0 22px 54px rgba(68, 42, 67, 0.08);
+      transform-style: preserve-3d;
+      animation: drift3d 13s ease-in-out infinite;
+    }
+    .orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(2px);
+      animation: floaty 8s ease-in-out infinite;
+    }
+    .orb.one {
+      width: 160px;
+      height: 160px;
+      top: 18px;
+      right: 18px;
+      background: radial-gradient(circle, rgba(255,122,168,0.5), rgba(255,122,168,0.06) 70%, transparent 72%);
+    }
+    .orb.two {
+      width: 120px;
+      height: 120px;
+      bottom: 42px;
+      left: 18px;
+      background: radial-gradient(circle, rgba(139,188,255,0.42), rgba(139,188,255,0.06) 70%, transparent 72%);
+      animation-delay: 1.6s;
+    }
+    .orb-ring {
+      position: absolute;
+      inset: 56px auto auto 50%;
+      transform: translateX(-50%);
+      width: 280px;
+      height: 280px;
+      border-radius: 50%;
+      border: 1px solid rgba(255,122,168,0.16);
+      box-shadow:
+        inset 0 0 0 26px rgba(255,255,255,0.3),
+        inset 0 0 0 52px rgba(139,188,255,0.08);
+      animation: pulseSoft 5s ease-in-out infinite;
+    }
+    .dashboard-card {
+      position: absolute;
+      inset: 92px 48px 72px 48px;
+      border-radius: 28px;
+      background: rgba(255,255,255,0.82);
+      border: 1px solid rgba(235,218,228,0.95);
+      box-shadow: 0 20px 50px rgba(60,40,66,0.1);
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      transform: translateZ(24px);
+    }
+    .dash-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+    .dash-pill {
+      padding: 7px 10px;
+      border-radius: 999px;
+      background: rgba(255,122,168,0.1);
+      color: var(--accent);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.4px;
+      text-transform: uppercase;
+    }
+    .dash-chip {
+      width: 38px;
+      height: 38px;
+      border-radius: 13px;
+      background: linear-gradient(135deg, var(--accent), #ffb36f);
+      color: white;
+      display: grid;
+      place-items: center;
+      box-shadow: 0 10px 22px rgba(255,122,168,0.2);
+    }
+    .dash-ring-wrap {
+      display: grid;
+      place-items: center;
+      flex: 1;
+      min-height: 180px;
+    }
+    .dash-ring {
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+      background:
+        conic-gradient(var(--accent) 0 260deg, rgba(139,188,255,0.18) 260deg 300deg, rgba(124,205,154,0.28) 300deg 360deg);
+      display: grid;
+      place-items: center;
+      box-shadow: 0 18px 38px rgba(255,122,168,0.12);
+      position: relative;
+    }
+    .dash-ring::before {
+      content: "";
+      position: absolute;
+      inset: 14px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.94);
+    }
+    .dash-ring-content {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+    }
+    .dash-ring-content strong {
+      display: block;
+      font-family: 'Fredoka', sans-serif;
+      font-size: 30px;
+      letter-spacing: -1px;
+      line-height: 1;
+    }
+    .dash-ring-content span {
+      display: block;
+      margin-top: 4px;
+      font-size: 11px;
+      color: var(--muted2);
+      text-transform: uppercase;
+      letter-spacing: 0.9px;
+      font-weight: 800;
+    }
+    .dash-bars {
+      display: grid;
+      gap: 10px;
+    }
+    .dash-bar {
+      display: grid;
+      grid-template-columns: 76px 1fr 40px;
+      gap: 10px;
+      align-items: center;
+    }
+    .dash-bar label {
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+    }
+    .bar-track {
+      height: 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.9);
+      overflow: hidden;
+      border: 1px solid rgba(235,218,228,0.9);
+    }
+    .bar-fill {
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--accent), #ffb36f);
+      box-shadow: 0 0 20px rgba(255,122,168,0.15);
+    }
+    .dash-bar small {
+      font-size: 11px;
+      color: var(--muted2);
+      text-align: right;
+      font-weight: 800;
+    }
+    .float-card {
+      position: absolute;
+      left: 16px;
+      bottom: 18px;
+      width: 160px;
+      padding: 12px 12px 10px;
+      border-radius: 20px;
+      background: rgba(255,255,255,0.92);
+      border: 1px solid var(--border);
+      box-shadow: 0 16px 32px rgba(60,40,66,0.1);
+      transform: rotate(-6deg);
+      animation: floaty 9s ease-in-out infinite;
+    }
+    .float-card.right {
+      left: auto;
+      right: 16px;
+      top: 18px;
+      bottom: auto;
+      width: 150px;
+      transform: rotate(7deg);
+      animation-delay: 1s;
+    }
+    .float-card b {
+      display: block;
+      font-size: 11px;
+      color: var(--muted2);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin-bottom: 8px;
+    }
+    .mini-radial {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .mini-ring {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: conic-gradient(var(--blue) 0 220deg, rgba(139,188,255,0.18) 220deg 360deg);
+      position: relative;
+      flex: none;
+    }
+    .mini-ring::before {
+      content: "";
+      position: absolute;
+      inset: 7px;
+      border-radius: 50%;
+      background: white;
+    }
+    .mini-ring span {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      font-size: 10px;
+      font-weight: 800;
+      z-index: 1;
+    }
+    .mini-copy strong {
+      display: block;
+      font-size: 13px;
+      line-height: 1.1;
+      margin-bottom: 4px;
+    }
+    .mini-copy small {
+      font-size: 11px;
+      color: var(--muted);
+      line-height: 1.4;
+      display: block;
+    }
     .mono {
       font-family: 'JetBrains Mono', monospace;
     }
@@ -424,6 +665,9 @@
       .preview-item { min-height: unset; }
       .footer, .preview-head { flex-direction: column; align-items: flex-start; }
       .shell::after { width: 84px; height: 84px; right: 14px; top: 94px; }
+      .showcase { min-height: 520px; }
+      .dashboard-card { inset: 90px 18px 58px 18px; }
+      .float-card, .float-card.right { width: 132px; }
     }
   </style>
 </head>
@@ -493,35 +737,59 @@
               A soft, friendly launch screen built to feel warm, polished, and easy to start.
             </p>
           </div>
+          <div class="showcase">
+            <div class="orb one"></div>
+            <div class="orb two"></div>
+            <div class="orb-ring"></div>
 
-          <div class="stack">
-            <div class="card">
-              <div class="icon">1</div>
-              <div><strong>Friendly first step</strong><span>Sign in, verify email, or reset passwords without feeling stuck.</span></div>
-            </div>
-            <div class="card">
-              <div class="icon" style="background: rgba(139,188,255,0.14); color: var(--blue);">2</div>
-              <div><strong>Soft motion</strong><span>Floating cards and gentle pulse effects keep the UI alive but calm.</span></div>
-            </div>
-            <div class="card">
-              <div class="icon" style="background: rgba(124,205,154,0.14); color: var(--green);">3</div>
-              <div><strong>Built for real use</strong><span>The app still works the same. Only the mood changes.</span></div>
-            </div>
-          </div>
-
-          <div class="preview">
-            <div class="preview-head">
-              <strong>What it feels like</strong>
-              <span class="mono">pastel launch</span>
-            </div>
-            <div class="preview-grid">
-              <div class="preview-item">
-                <b>Clean start</b>
-                <small>No clutter, just a bright path into the app.</small>
+            <div class="dashboard-card">
+              <div class="dash-top">
+                <div class="dash-pill">Today’s flow</div>
+                <div class="dash-chip">✦</div>
               </div>
-              <div class="preview-item">
-                <b>Calm energy</b>
-                <small>Rounded cards and soft colors keep it cute.</small>
+              <div class="dash-ring-wrap">
+                <div class="dash-ring">
+                  <div class="dash-ring-content">
+                    <strong>86%</strong>
+                    <span>focus</span>
+                  </div>
+                </div>
+              </div>
+              <div class="dash-bars">
+                <div class="dash-bar">
+                  <label>DSA</label>
+                  <div class="bar-track"><div class="bar-fill" style="width:78%"></div></div>
+                  <small>78%</small>
+                </div>
+                <div class="dash-bar">
+                  <label>Spring</label>
+                  <div class="bar-track"><div class="bar-fill" style="width:62%; background:linear-gradient(90deg,var(--blue),var(--purple))"></div></div>
+                  <small>62%</small>
+                </div>
+                <div class="dash-bar">
+                  <label>Health</label>
+                  <div class="bar-track"><div class="bar-fill" style="width:90%; background:linear-gradient(90deg,var(--green),#b4efc9)"></div></div>
+                  <small>90%</small>
+                </div>
+              </div>
+            </div>
+
+            <div class="float-card">
+              <b>Streak</b>
+              <div class="mini-radial">
+                <div class="mini-ring"><span>20</span></div>
+                <div class="mini-copy">
+                  <strong>Days locked in</strong>
+                  <small>Soft progress, steady momentum.</small>
+                </div>
+              </div>
+            </div>
+
+            <div class="float-card right">
+              <b>Next up</b>
+              <div class="mini-copy">
+                <strong>Focus mode</strong>
+                <small>One tap into a distraction-free session.</small>
               </div>
             </div>
           </div>
