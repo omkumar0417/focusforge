@@ -115,6 +115,8 @@
       display: flex;
       gap: 10px;
       flex-wrap: wrap;
+      position: relative;
+      z-index: 5;
     }
     .chip {
       display: inline-flex;
@@ -126,6 +128,14 @@
       font-size: 13px;
       font-weight: 800;
       transition: transform .2s ease, box-shadow .2s ease, background .2s ease;
+      cursor: pointer;
+      position: relative;
+      z-index: 2;
+      pointer-events: auto;
+      border: none;
+      appearance: none;
+      -webkit-appearance: none;
+      font-family: inherit;
     }
     .chip:hover { transform: translateY(-1px); }
     .chip.primary {
@@ -228,6 +238,8 @@
       gap: 12px;
       flex-wrap: wrap;
       margin-bottom: 26px;
+      position: relative;
+      z-index: 5;
     }
     .feature-grid {
       display: grid;
@@ -398,11 +410,17 @@
       background: rgba(255,255,255,0.92);
       color: var(--muted);
       font-size: 12px;
+      position: relative;
+      z-index: 5;
     }
     .footer a {
       color: var(--accent2);
       text-decoration: none;
       font-weight: 800;
+    }
+    .footer a,
+    .chip {
+      -webkit-tap-highlight-color: transparent;
     }
     .showcase {
       position: relative;
@@ -575,9 +593,9 @@
     }
     .float-card {
       position: absolute;
-      left: 16px;
-      bottom: 18px;
-      width: 160px;
+      left: 18px;
+      bottom: 20px;
+      width: min(168px, calc(100% - 220px));
       padding: 12px 12px 10px;
       border-radius: 20px;
       background: rgba(255,255,255,0.92);
@@ -585,14 +603,16 @@
       box-shadow: 0 16px 32px rgba(60,40,66,0.1);
       transform: rotate(-6deg);
       animation: floaty 9s ease-in-out infinite;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
     }
     .float-card.right {
       left: auto;
-      right: 16px;
-      top: 18px;
+      right: 20px;
+      top: 22px;
       bottom: auto;
-      width: 150px;
-      transform: rotate(7deg);
+      width: min(160px, calc(100% - 220px));
+      transform: rotate(5deg);
       animation-delay: 1s;
     }
     .float-card b {
@@ -667,7 +687,13 @@
       .shell::after { width: 84px; height: 84px; right: 14px; top: 94px; }
       .showcase { min-height: 520px; }
       .dashboard-card { inset: 90px 18px 58px 18px; }
-      .float-card, .float-card.right { width: 132px; }
+      .float-card, .float-card.right {
+        width: min(132px, calc(100% - 160px));
+      }
+      .float-card.right {
+        right: 14px;
+        top: 16px;
+      }
     }
   </style>
 </head>
@@ -680,8 +706,8 @@
           <div class="brand-name">Focus<span>Forge</span></div>
         </div>
         <div class="nav-actions">
-          <a class="chip secondary" href="/focusforge_app.html">Open App</a>
-          <a class="chip primary" href="/focusforge_app.html#signup-form">Get Started</a>
+          <button class="chip secondary" type="button" data-nav="./focusforge_app.html">Open App</button>
+          <button class="chip primary" type="button" data-nav="./focusforge_app.html#signup-form">Get Started</button>
         </div>
       </header>
 
@@ -696,8 +722,8 @@
               and the vibe soft enough to actually want to open every day.
             </p>
             <div class="actions">
-              <a class="chip primary" href="/focusforge_app.html">Launch FocusForge</a>
-              <a class="chip secondary" href="/focusforge_app.html#login-form">Sign In</a>
+              <button class="chip primary" type="button" data-nav="./focusforge_app.html">Launch FocusForge</button>
+              <button class="chip secondary" type="button" data-nav="./focusforge_app.html#login-form">Sign In</button>
             </div>
             <div class="feature-grid">
               <div class="feature">
@@ -796,11 +822,25 @@
 
           <div class="footer">
             <span class="mono">Vercel + MongoDB Atlas</span>
-            <a href="/focusforge_app.html">Go to app →</a>
+            <a href="./focusforge_app.html" data-nav="./focusforge_app.html">Go to app →</a>
           </div>
         </aside>
       </section>
     </div>
   </main>
+  <script>
+    (function () {
+      function go(url) {
+        window.location.assign(new URL(url, window.location.href).href);
+      }
+
+      document.querySelectorAll('[data-nav]').forEach((el) => {
+        el.addEventListener('click', (event) => {
+          event.preventDefault();
+          go(el.getAttribute('data-nav'));
+        });
+      });
+    })();
+  </script>
 </body>
 </html>
