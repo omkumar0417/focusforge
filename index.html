@@ -6,82 +6,196 @@
   <title>FocusForge</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
   <style>
     :root {
-      --bg: #09090f;
-      --surface: rgba(18, 20, 28, 0.9);
-      --card: rgba(20, 23, 32, 0.96);
-      --border: rgba(34, 38, 58, 1);
-      --accent: #f97316;
-      --accent2: #fb923c;
-      --text: #e2e8f0;
-      --muted: #94a3b8;
-      --green: #22c55e;
-      --blue: #60a5fa;
+      --bg: #fff8fb;
+      --panel: rgba(255,255,255,0.9);
+      --panel-strong: rgba(255,255,255,0.98);
+      --border: rgba(235, 218, 228, 1);
+      --accent: #ff7aa8;
+      --accent2: #ff9f6b;
+      --text: #2b2240;
+      --muted: #6f6784;
+      --muted2: #8c8298;
+      --green: #7ccd9a;
+      --blue: #8bbcff;
+      --purple: #c7a8ff;
     }
     * { box-sizing: border-box; }
     html, body { margin: 0; min-height: 100%; }
     body {
-      font-family: 'Syne', system-ui, sans-serif;
+      font-family: 'Nunito', system-ui, sans-serif;
       color: var(--text);
       background:
-        radial-gradient(circle at 20% 20%, rgba(249,115,22,0.13), transparent 30%),
-        radial-gradient(circle at 85% 15%, rgba(96,165,250,0.10), transparent 24%),
-        radial-gradient(circle at 50% 110%, rgba(34,197,94,0.08), transparent 28%),
-        var(--bg);
+        radial-gradient(circle at 14% 18%, rgba(255,122,168,0.17), transparent 24%),
+        radial-gradient(circle at 84% 14%, rgba(139,188,255,0.16), transparent 22%),
+        radial-gradient(circle at 50% 112%, rgba(124,205,154,0.12), transparent 28%),
+        linear-gradient(180deg, #fff8fb 0%, #fff0f5 100%);
       overflow-x: hidden;
     }
-    .wrap {
+    @keyframes floaty {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      50% { transform: translateY(-10px) rotate(1deg); }
+    }
+    @keyframes pulseSoft {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.03); }
+    }
+    .page {
       min-height: 100vh;
-      display: grid;
-      place-items: center;
-      padding: 24px;
+      padding: 20px;
     }
     .shell {
-      width: 100%;
-      max-width: 1180px;
-      display: grid;
-      grid-template-columns: 1.2fr 0.8fr;
-      gap: 24px;
+      max-width: 1280px;
+      margin: 0 auto;
       position: relative;
+      perspective: 2200px;
     }
     .shell::before {
       content: "";
       position: absolute;
-      inset: -18px;
-      background: linear-gradient(135deg, rgba(249,115,22,0.08), rgba(96,165,250,0.05));
-      filter: blur(42px);
-      z-index: 0;
+      inset: 38px 0 auto;
+      height: 340px;
+      background: radial-gradient(circle at 22% 30%, rgba(255,122,168,0.12), transparent 44%), radial-gradient(circle at 76% 12%, rgba(139,188,255,0.12), transparent 34%);
+      filter: blur(60px);
       pointer-events: none;
     }
-    .hero, .panel {
+    .shell::after {
+      content: "";
+      position: absolute;
+      top: 32px;
+      right: 28px;
+      width: 120px;
+      height: 120px;
+      border-radius: 32px;
+      background: linear-gradient(135deg, rgba(255,122,168,0.12), rgba(139,188,255,0.12));
+      animation: floaty 7s ease-in-out infinite;
+      pointer-events: none;
+    }
+    .nav {
       position: relative;
       z-index: 1;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 10px 0 24px;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .mark {
+      width: 48px;
+      height: 48px;
+      border-radius: 16px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, var(--accent), #ffbb7a);
+      color: white;
+      font-size: 22px;
+      box-shadow: 0 14px 30px rgba(255,122,168,0.22);
+      flex: none;
+      animation: pulseSoft 4s ease-in-out infinite;
+    }
+    .brand-name {
+      font-family: 'Fredoka', sans-serif;
+      font-size: 24px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+    }
+    .brand-name span { color: var(--accent); }
+    .nav-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 12px 16px;
+      border-radius: 999px;
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 800;
+      transition: transform .2s ease, box-shadow .2s ease, background .2s ease;
+    }
+    .chip:hover { transform: translateY(-1px); }
+    .chip.primary {
+      color: white;
+      background: linear-gradient(135deg, var(--accent), #ffb36f);
+      box-shadow: 0 16px 32px rgba(255,122,168,0.2);
+    }
+    .chip.secondary {
+      color: var(--text);
+      background: rgba(255,255,255,0.75);
       border: 1px solid var(--border);
-      border-radius: 28px;
-      overflow: hidden;
-      backdrop-filter: blur(18px);
     }
     .hero {
-      background:
-        linear-gradient(180deg, rgba(18,20,28,0.92), rgba(12,14,20,0.98)),
-        radial-gradient(circle at top right, rgba(249,115,22,0.16), transparent 32%);
-      padding: 42px;
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: minmax(0, 1.08fr) minmax(330px, 0.92fr);
+      gap: 18px;
+      align-items: stretch;
+      transform-style: preserve-3d;
+    }
+    .left, .right {
+      border: 1px solid var(--border);
+      border-radius: 34px;
+      overflow: hidden;
+      background: linear-gradient(180deg, rgba(255,255,255,0.96), rgba(255,246,249,0.98));
+      backdrop-filter: blur(18px);
+      box-shadow: 0 20px 60px rgba(68, 42, 67, 0.08);
+      transform-style: preserve-3d;
+      backface-visibility: hidden;
+      transition: transform 0.7s cubic-bezier(0.2, 0.85, 0.2, 1), box-shadow 0.7s cubic-bezier(0.2, 0.85, 0.2, 1);
+      will-change: transform;
+    }
+    @media (hover: hover) and (pointer: fine) {
+      .left:hover {
+        transform: translateY(-10px) rotateX(2.4deg) rotateY(-4deg) translateZ(0);
+        box-shadow: 0 34px 90px rgba(68, 42, 67, 0.14);
+      }
+      .right:hover {
+        transform: translateY(-10px) rotateX(2.4deg) rotateY(4deg) translateZ(0);
+        box-shadow: 0 34px 90px rgba(68, 42, 67, 0.14);
+      }
+      .chip:hover {
+        transform: translateY(-2px) scale(1.01);
+      }
+    }
+    .left {
+      padding: clamp(24px, 3.4vw, 44px);
+      min-height: 720px;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      min-height: 680px;
+      position: relative;
+    }
+    .left::before {
+      content: "";
+      position: absolute;
+      inset: auto auto 18px 18px;
+      width: 140px;
+      height: 140px;
+      border-radius: 42px;
+      background: linear-gradient(135deg, rgba(255,122,168,0.1), rgba(139,188,255,0.12));
+      animation: floaty 8s ease-in-out infinite;
+      pointer-events: none;
     }
     .eyebrow {
       display: inline-flex;
-      width: fit-content;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
+      width: fit-content;
       padding: 8px 14px;
       border-radius: 999px;
-      border: 1px solid rgba(249,115,22,0.25);
-      background: rgba(249,115,22,0.08);
+      border: 1px solid rgba(255,122,168,0.22);
+      background: rgba(255,122,168,0.09);
       color: var(--accent2);
       font-size: 12px;
       font-weight: 800;
@@ -89,19 +203,20 @@
       text-transform: uppercase;
     }
     h1 {
-      margin: 18px 0 14px;
-      font-size: clamp(44px, 6vw, 74px);
-      line-height: 0.96;
-      letter-spacing: -2px;
-      max-width: 12ch;
+      margin: 16px 0 14px;
+      font-family: 'Fredoka', sans-serif;
+      font-size: clamp(48px, 7vw, 82px);
+      line-height: 0.92;
+      letter-spacing: -2.4px;
+      max-width: 10ch;
     }
     h1 span { color: var(--accent); }
     .lede {
       max-width: 60ch;
       color: var(--muted);
       font-size: 16px;
-      line-height: 1.7;
-      margin-bottom: 26px;
+      line-height: 1.78;
+      margin-bottom: 22px;
     }
     .actions {
       display: flex;
@@ -109,156 +224,172 @@
       flex-wrap: wrap;
       margin-bottom: 26px;
     }
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      border-radius: 14px;
-      padding: 14px 20px;
-      text-decoration: none;
-      font-weight: 800;
-      font-size: 14px;
-      transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
-    }
-    .btn:hover { transform: translateY(-1px); }
-    .btn-primary {
-      color: white;
-      background: linear-gradient(135deg, var(--accent), #ef4444);
-      box-shadow: 0 18px 36px rgba(249,115,22,0.22);
-    }
-    .btn-secondary {
-      color: var(--text);
-      background: rgba(255,255,255,0.03);
-      border: 1px solid var(--border);
-    }
     .feature-grid {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 14px;
-      margin-top: 10px;
+      margin-top: 8px;
     }
     .feature {
-      background: rgba(255,255,255,0.03);
+      background: rgba(255,255,255,0.92);
       border: 1px solid var(--border);
-      border-radius: 18px;
-      padding: 16px;
-      min-height: 108px;
+      border-radius: 22px;
+      padding: 18px;
+      min-height: 120px;
+      animation: floaty 9s ease-in-out infinite;
+      transform: translateZ(18px);
     }
+    .feature:nth-child(2) { animation-delay: 0.4s; }
+    .feature:nth-child(3) { animation-delay: 0.8s; }
+    .feature:nth-child(4) { animation-delay: 1.2s; }
     .feature strong {
       display: block;
-      margin-bottom: 7px;
       font-size: 13px;
-      letter-spacing: 0.2px;
+      margin-bottom: 8px;
     }
     .feature span {
       color: var(--muted);
       font-size: 12px;
-      line-height: 1.55;
+      line-height: 1.6;
     }
     .stats {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 12px;
-      margin-top: 24px;
+      margin-top: 22px;
     }
     .stat {
       border: 1px solid var(--border);
-      border-radius: 18px;
+      border-radius: 22px;
       padding: 16px;
-      background: rgba(255,255,255,0.03);
+      background: rgba(255,255,255,0.92);
+      min-width: 0;
     }
     .stat .num {
-      font-size: 20px;
+      display: block;
+      font-size: 22px;
       font-weight: 800;
-      letter-spacing: -0.5px;
+      letter-spacing: -0.8px;
     }
     .stat .label {
       display: block;
-      margin-top: 4px;
-      color: var(--muted);
+      margin-top: 3px;
+      color: var(--muted2);
       font-size: 11px;
       text-transform: uppercase;
       letter-spacing: 1px;
     }
-    .panel {
-      background: var(--card);
-      padding: 28px;
+    .right {
+      padding: 24px;
       display: flex;
       flex-direction: column;
-      justify-content: space-between;
-      min-height: 680px;
+      gap: 18px;
+      min-height: 720px;
     }
-    .brand {
-      display: flex;
-      align-items: center;
+    .panel-top {
+      background: rgba(255,255,255,0.92);
+      border: 1px solid var(--border);
+      border-radius: 26px;
+      padding: 18px;
+    }
+    .panel-top p {
+      margin: 10px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.65;
+    }
+    .stack {
+      display: grid;
       gap: 12px;
-      margin-bottom: 22px;
     }
-    .brand-mark {
-      width: 48px;
-      height: 48px;
+    .card {
+      background: rgba(255,255,255,0.92);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 16px;
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      animation: floaty 8s ease-in-out infinite;
+      transform: translateZ(18px);
+    }
+    .card:nth-child(2) { animation-delay: 0.4s; }
+    .card:nth-child(3) { animation-delay: 0.8s; }
+    .icon {
+      width: 42px;
+      height: 42px;
       border-radius: 14px;
       display: grid;
       place-items: center;
-      color: white;
-      font-size: 22px;
-      background: linear-gradient(135deg, var(--accent), #ef4444);
-      box-shadow: 0 10px 24px rgba(249,115,22,0.25);
-    }
-    .brand h2 {
-      margin: 0;
-      font-size: 28px;
-      letter-spacing: -0.7px;
-    }
-    .brand h2 span { color: var(--accent); }
-    .panel p {
-      color: var(--muted);
-      font-size: 14px;
-      line-height: 1.6;
-      margin: 0 0 18px;
-    }
-    .list {
-      display: grid;
-      gap: 12px;
-      margin-top: 8px;
-    }
-    .item {
-      display: flex;
-      gap: 12px;
-      padding: 14px 15px;
-      border-radius: 16px;
-      background: rgba(255,255,255,0.03);
-      border: 1px solid var(--border);
-      align-items: flex-start;
-    }
-    .dot {
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      margin-top: 6px;
+      background: rgba(255,122,168,0.12);
+      color: var(--accent);
+      font-size: 18px;
       flex: none;
-      background: var(--accent);
-      box-shadow: 0 0 0 4px rgba(249,115,22,0.12);
     }
-    .item strong {
+    .card strong {
       display: block;
-      font-size: 13px;
       margin-bottom: 4px;
+      font-size: 13px;
     }
-    .item span {
+    .card span {
       color: var(--muted);
       font-size: 12px;
-      line-height: 1.5;
+      line-height: 1.55;
     }
-    .footer {
+    .preview {
+      border: 1px solid var(--border);
+      border-radius: 26px;
+      padding: 18px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.95), rgba(255,245,248,0.98));
+      display: grid;
+      gap: 12px;
+      transform: translateZ(22px);
+    }
+    .preview-head {
       display: flex;
       justify-content: space-between;
       gap: 12px;
       align-items: center;
-      margin-top: 20px;
-      padding-top: 18px;
-      border-top: 1px solid var(--border);
+    }
+    .preview-head strong {
+      font-size: 13px;
+    }
+    .preview-head span {
+      color: var(--accent2);
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .preview-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+    .preview-item {
+      padding: 14px;
+      border-radius: 20px;
+      background: rgba(255,255,255,0.95);
+      border: 1px solid var(--border);
+      min-height: 98px;
+    }
+    .preview-item b {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 13px;
+    }
+    .preview-item small {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.55;
+    }
+    .footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 16px 18px;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      background: rgba(255,255,255,0.92);
       color: var(--muted);
       font-size: 12px;
     }
@@ -267,107 +398,136 @@
       text-decoration: none;
       font-weight: 800;
     }
-    .mini-note {
+    .mono {
       font-family: 'JetBrains Mono', monospace;
-      color: rgba(226, 232, 240, 0.75);
     }
-    @media (max-width: 900px) {
-      .shell { grid-template-columns: 1fr; }
-      .hero, .panel { min-height: unset; }
-      .hero { padding: 28px; }
-      .panel { padding: 24px; }
+    @media (max-width: 980px) {
+      .hero { grid-template-columns: 1fr; }
+      .left, .right { min-height: unset; }
     }
     @media (max-width: 640px) {
-      .wrap { padding: 16px; }
-      .hero { padding: 24px; }
-      .feature-grid, .stats { grid-template-columns: 1fr; }
-      .footer { flex-direction: column; align-items: flex-start; }
-      h1 { letter-spacing: -1.4px; }
+      .page { padding: 14px; }
+      .nav { padding-bottom: 18px; }
+      .brand-name { font-size: 20px; }
+      .nav-actions { width: 100%; }
+      .chip { flex: 1 1 0; }
+      .left { padding: 22px 18px; border-radius: 28px; }
+      .right { padding: 18px; border-radius: 28px; }
+      h1 { font-size: clamp(38px, 14vw, 56px); letter-spacing: -2px; }
+      .lede { font-size: 15px; }
+      .feature-grid, .preview-grid, .stats { grid-template-columns: 1fr; }
+      .preview-item { min-height: unset; }
+      .footer, .preview-head { flex-direction: column; align-items: flex-start; }
+      .shell::after { width: 84px; height: 84px; right: 14px; top: 94px; }
     }
   </style>
 </head>
 <body>
-  <main class="wrap">
-    <section class="shell">
-      <div class="hero">
-        <div>
-          <div class="eyebrow">20-day discipline system</div>
-          <h1>Build momentum. <span>Stay locked in.</span></h1>
-          <p class="lede">
-            FocusForge helps you organize DSA, LeetCode, Spring Boot, academics, health,
-            and communication in one focused system. Track streaks, see progress, and keep
-            your day moving without the noise.
-          </p>
-          <div class="actions">
-            <a class="btn btn-primary" href="/focusforge_app.html">Open App</a>
-            <a class="btn btn-secondary" href="/focusforge_app.html#signup-form">Create Account</a>
-          </div>
-          <div class="feature-grid">
-            <div class="feature">
-              <strong>Daily routine engine</strong>
-              <span>Automatically generated 20-day workflow with morning, college, evening, and night blocks.</span>
-            </div>
-            <div class="feature">
-              <strong>MongoDB-backed progress</strong>
-              <span>Accounts, streaks, and saved data persist through MongoDB Atlas on Vercel.</span>
-            </div>
-            <div class="feature">
-              <strong>Deep focus tools</strong>
-              <span>Pomodoro, distraction tracking, and focus mode help you protect your attention.</span>
-            </div>
-            <div class="feature">
-              <strong>Analytics you can use</strong>
-              <span>Calendar view, charts, and progress summaries show where your consistency is strong.</span>
-            </div>
-          </div>
+  <main class="page">
+    <div class="shell">
+      <header class="nav">
+        <div class="brand">
+          <div class="mark">⚡</div>
+          <div class="brand-name">Focus<span>Forge</span></div>
         </div>
-        <div class="stats">
-          <div class="stat"><span class="num">20</span><span class="label">day sprint</span></div>
-          <div class="stat"><span class="num">6</span><span class="label">focus tracks</span></div>
-          <div class="stat"><span class="num">1</span><span class="label">workspace</span></div>
+        <div class="nav-actions">
+          <a class="chip secondary" href="/focusforge_app.html">Open App</a>
+          <a class="chip primary" href="/focusforge_app.html#signup-form">Get Started</a>
         </div>
-      </div>
+      </header>
 
-      <aside class="panel">
-        <div>
-          <div class="brand">
-            <div class="brand-mark">⚡</div>
-            <h2>Focus<span>Forge</span></h2>
+      <section class="hero">
+        <div class="left">
+          <div>
+            <div class="eyebrow">cute focus system</div>
+            <h1>Make study time <span>feel lighter.</span></h1>
+            <p class="lede">
+              FocusForge is a sweet little command center for your DSA, Spring Boot,
+              academics, and health goals. It keeps the routine simple, the progress clear,
+              and the vibe soft enough to actually want to open every day.
+            </p>
+            <div class="actions">
+              <a class="chip primary" href="/focusforge_app.html">Launch FocusForge</a>
+              <a class="chip secondary" href="/focusforge_app.html#login-form">Sign In</a>
+            </div>
+            <div class="feature-grid">
+              <div class="feature">
+                <strong>Soft structure</strong>
+                <span>Beautiful 20-day routines that feel calm instead of overwhelming.</span>
+              </div>
+              <div class="feature">
+                <strong>Happy progress</strong>
+                <span>Saved streaks and data stay in MongoDB Atlas behind the scenes.</span>
+              </div>
+              <div class="feature">
+                <strong>Gentle focus</strong>
+                <span>Pomodoro, distraction tracking, and task flow with less friction.</span>
+              </div>
+              <div class="feature">
+                <strong>Phone-friendly</strong>
+                <span>Designed to stack neatly and feel playful on smaller screens.</span>
+              </div>
+            </div>
           </div>
-          <p>
-            Your workflow for serious placement prep, built to feel clean, sharp, and easy
-            to start every morning.
-          </p>
-          <div class="list">
-            <div class="item">
-              <div class="dot"></div>
-              <div>
-                <strong>One place for everything</strong>
-                <span>DSA, Spring Boot, health, and communication logs live in the same system.</span>
-              </div>
-            </div>
-            <div class="item">
-              <div class="dot" style="background: var(--green); box-shadow: 0 0 0 4px rgba(34,197,94,0.12)"></div>
-              <div>
-                <strong>Built for consistency</strong>
-                <span>Every login brings you back to your streak, tasks, and saved momentum.</span>
-              </div>
-            </div>
-            <div class="item">
-              <div class="dot" style="background: var(--blue); box-shadow: 0 0 0 4px rgba(96,165,250,0.12)"></div>
-              <div>
-                <strong>Fast, simple launch</strong>
-                <span>Click through to the app and continue right where you left off.</span>
-              </div>
+          <div>
+            <div class="stats">
+              <div class="stat"><span class="num">20</span><span class="label">day sprint</span></div>
+              <div class="stat"><span class="num">6</span><span class="label">focus tracks</span></div>
+              <div class="stat"><span class="num">1</span><span class="label">cute dashboard</span></div>
             </div>
           </div>
         </div>
-        <div class="footer">
-          <span class="mini-note">Vercel + MongoDB Atlas</span>
-          <a href="/focusforge_app.html">Go to app →</a>
-        </div>
-      </aside>
-    </section>
+
+        <aside class="right">
+          <div class="panel-top">
+            <div class="brand">
+              <div class="mark">✨</div>
+              <div class="brand-name">Focus<span>Forge</span></div>
+            </div>
+            <p>
+              A soft, friendly launch screen built to feel warm, polished, and easy to start.
+            </p>
+          </div>
+
+          <div class="stack">
+            <div class="card">
+              <div class="icon">1</div>
+              <div><strong>Friendly first step</strong><span>Sign in, verify email, or reset passwords without feeling stuck.</span></div>
+            </div>
+            <div class="card">
+              <div class="icon" style="background: rgba(139,188,255,0.14); color: var(--blue);">2</div>
+              <div><strong>Soft motion</strong><span>Floating cards and gentle pulse effects keep the UI alive but calm.</span></div>
+            </div>
+            <div class="card">
+              <div class="icon" style="background: rgba(124,205,154,0.14); color: var(--green);">3</div>
+              <div><strong>Built for real use</strong><span>The app still works the same. Only the mood changes.</span></div>
+            </div>
+          </div>
+
+          <div class="preview">
+            <div class="preview-head">
+              <strong>What it feels like</strong>
+              <span class="mono">pastel launch</span>
+            </div>
+            <div class="preview-grid">
+              <div class="preview-item">
+                <b>Clean start</b>
+                <small>No clutter, just a bright path into the app.</small>
+              </div>
+              <div class="preview-item">
+                <b>Calm energy</b>
+                <small>Rounded cards and soft colors keep it cute.</small>
+              </div>
+            </div>
+          </div>
+
+          <div class="footer">
+            <span class="mono">Vercel + MongoDB Atlas</span>
+            <a href="/focusforge_app.html">Go to app →</a>
+          </div>
+        </aside>
+      </section>
+    </div>
   </main>
 </body>
 </html>
