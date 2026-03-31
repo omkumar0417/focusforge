@@ -93,6 +93,9 @@ body{font-family:'Syne',sans-serif;background:var(--bg);color:var(--text);min-he
 .otp-actions .btn-primary{flex:1 1 180px}
 .btn-ghost{background:transparent;border:1px solid var(--border);color:var(--text);border-radius:10px;padding:13px 16px;font-family:'Syne',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:all 0.2s}
 .btn-ghost:hover{background:var(--card2)}
+.mini-link{background:none;border:none;padding:0;color:var(--accent2);font:inherit;font-size:12px;font-weight:700;cursor:pointer}
+.mini-link:hover{text-decoration:underline}
+.cooldown-text{font-size:12px;color:var(--muted2);margin-top:-4px}
 
 /* MAIN APP */
 #app{display:none;height:100vh;overflow:hidden}
@@ -416,6 +419,7 @@ body.light .mobile-header{background:#ffffff}
           <input type="password" id="login-pass" placeholder="••••••••" autocomplete="current-password"/>
         </div>
         <button class="btn-primary" onclick="handleLogin()">Enter FocusForge ⚡</button>
+        <button class="mini-link" onclick="showResetFlow()">Forgot password?</button>
         <p style="text-align:center;font-size:12px;color:var(--muted);margin-top:4px">Demo: use any email + password (6+ chars)</p>
       </div>
       <div class="auth-form" id="signup-form" style="display:none">
@@ -446,8 +450,34 @@ body.light .mobile-header{background:#ffffff}
         </div>
         <div class="otp-actions">
           <button class="btn-primary" onclick="handleVerify()">Verify & Continue</button>
-          <button class="btn-ghost" onclick="handleResendOtp()">Resend OTP</button>
+          <button class="btn-ghost" id="otp-resend-btn" onclick="handleResendOtp()">Resend OTP</button>
         </div>
+        <div class="cooldown-text" id="otp-resend-note"></div>
+        </div>
+      </div>
+      <div class="auth-form" id="reset-form" style="display:none">
+        <p class="verify-hint">Enter your email to receive a password reset code. Then use the code to create a new password.</p>
+        <div id="reset-step-email">
+          <div class="form-group">
+            <label>Email</label>
+            <input type="email" id="reset-email" placeholder="you@example.com" autocomplete="email"/>
+          </div>
+          <button class="btn-primary" onclick="handleForgotPassword()">Send Reset Code</button>
+        </div>
+        <div id="reset-step-code" style="display:none">
+          <div class="form-group">
+            <label>Reset Code</label>
+            <input type="text" id="reset-code" inputmode="numeric" maxlength="6" placeholder="123456"/>
+          </div>
+          <div class="form-group">
+            <label>New Password</label>
+            <input type="password" id="reset-new-pass" placeholder="Min 6 characters" autocomplete="new-password"/>
+          </div>
+          <div class="otp-actions">
+            <button class="btn-primary" onclick="handleResetPassword()">Reset Password</button>
+            <button class="btn-ghost" id="reset-resend-btn" onclick="handleResendReset()">Resend Code</button>
+          </div>
+          <div class="cooldown-text" id="reset-resend-note"></div>
         </div>
       </div>
       <div class="auth-footer">
@@ -1199,6 +1229,7 @@ const DB = {
 
 // ===================== AUTH =====================
 let currentUser = null;
+const resendCooldowns = { otp: null, reset: null };
 const QUOTES = [
   {text:"The secret of getting ahead is getting started.",author:"Mark Twain"},
   {text:"Discipline is the bridge between goals and accomplishment.",author:"Jim Rohn"},
@@ -1226,7 +1257,11 @@ function switchAuth(mode) {
   document.querySelectorAll('.auth-tab button').forEach((b,i) => b.classList.toggle('active', (mode==='login'&&i===0)||(mode==='signup'&&i===1)));
   document.getElementById('login-form').style.display = mode==='login'?'flex':'none';
   document.getElementById('signup-form').style.display = mode==='signup'?'flex':'none';
+  document.getElementById('reset-form').style.display = mode==='reset'?'flex':'none';
   if (mode === 'signup') {
+    showSignupDetails();
+  }
+  if (mode !== 'signup') {
     showSignupDetails();
   }
   document.getElementById('auth-error').style.display = 'none';
@@ -1246,6 +1281,54 @@ function showVerifyFlow(email, message) {
   document.getElementById('verify-code').value = '';
   document.getElementById('verify-code').focus();
   if (message) toast(message, 'success');
+}
+
+function showResetFlow(email) {
+  switchAuth('reset');
+  document.getElementById('reset-step-email').style.display = 'block';
+  document.getElementById('reset-step-code').style.display = 'none';
+  document.getElementById('reset-email').value = email || '';
+  document.getElementById('reset-code').value = '';
+  document.getElementById('reset-new-pass').value = '';
+  stopResendCooldown('reset');
+}
+
+function startResendCooldown(kind, seconds = 60) {
+  const isOtp = kind === 'otp';
+  const buttonId = isOtp ? 'otp-resend-btn' : 'reset-resend-btn';
+  const noteId = isOtp ? 'otp-resend-note' : 'reset-resend-note';
+  const button = document.getElementById(buttonId);
+  const note = document.getElementById(noteId);
+
+  stopResendCooldown(kind);
+
+  let remaining = seconds;
+  if (button) button.disabled = true;
+  if (note) note.textContent = `You can resend in ${remaining}s`;
+
+  resendCooldowns[kind] = setInterval(() => {
+    remaining -= 1;
+    if (remaining <= 0) {
+      stopResendCooldown(kind);
+      return;
+    }
+    if (note) note.textContent = `You can resend in ${remaining}s`;
+  }, 1000);
+}
+
+function stopResendCooldown(kind) {
+  const isOtp = kind === 'otp';
+  const buttonId = isOtp ? 'otp-resend-btn' : 'reset-resend-btn';
+  const noteId = isOtp ? 'otp-resend-note' : 'reset-resend-note';
+  const button = document.getElementById(buttonId);
+  const note = document.getElementById(noteId);
+
+  if (resendCooldowns[kind]) {
+    clearInterval(resendCooldowns[kind]);
+    resendCooldowns[kind] = null;
+  }
+  if (button) button.disabled = false;
+  if (note) note.textContent = '';
 }
 
 function handleLogin() {
@@ -1285,6 +1368,7 @@ function handleSignup() {
     body: { name, email, password: pass }
   }).then((res) => {
     showVerifyFlow(email, res.message || 'We sent a verification code to your email.');
+    startResendCooldown('otp', 60);
   }).catch((err) => showAuthError(err.message));
 }
 
@@ -1326,7 +1410,49 @@ function handleResendOtp() {
     body: { email }
   }).then((res) => {
     toast(res.message || 'Verification code resent.', 'success');
+    startResendCooldown('otp', 60);
   }).catch((err) => showAuthError(err.message));
+}
+
+function handleForgotPassword() {
+  const email = document.getElementById('reset-email').value.trim();
+  if (!email) return showAuthError('Enter your email first.');
+  API.request('/api/auth/forgot', {
+    method: 'POST',
+    auth: false,
+    body: { email }
+  }).then((res) => {
+    document.getElementById('reset-step-email').style.display = 'none';
+    document.getElementById('reset-step-code').style.display = 'block';
+    document.getElementById('reset-code').focus();
+    toast(res.message || 'Reset code sent to your email', 'success');
+    startResendCooldown('reset', 60);
+  }).catch((err) => showAuthError(err.message));
+}
+
+function handleResetPassword() {
+  const email = document.getElementById('reset-email').value.trim();
+  const code = document.getElementById('reset-code').value.trim();
+  const newPassword = document.getElementById('reset-new-pass').value;
+  if (!email || !code || !newPassword) return showAuthError('Fill all reset fields.');
+  API.request('/api/auth/reset', {
+    method: 'POST',
+    auth: false,
+    body: { email, code, newPassword }
+  }).then((res) => {
+    toast(res.message || 'Password reset successfully', 'success');
+    switchAuth('login');
+    document.getElementById('login-email').value = email;
+    document.getElementById('login-pass').value = '';
+    document.getElementById('login-pass').focus();
+    stopResendCooldown('reset');
+  }).catch((err) => showAuthError(err.message));
+}
+
+function handleResendReset() {
+  const email = document.getElementById('reset-email').value.trim();
+  if (!email) return showAuthError('Enter your email first.');
+  handleForgotPassword();
 }
 
 function loginUser(user) {
