@@ -8,8 +8,10 @@ const userSchema = new mongoose.Schema({
   streak: { type: Number, default: 0 },
   longestStreak: { type: Number, default: 0 },
   lastActiveDate: { type: Date, default: null },
+  startDate: { type: String, default: null },
   theme: { type: String, default: 'dark' },
   phoneUsageLimit: { type: Number, default: 2 }, // hours
+  data: { type: mongoose.Schema.Types.Mixed, default: {} },
   createdAt: { type: Date, default: Date.now }
 });
 

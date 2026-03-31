@@ -158,30 +158,22 @@ Open `http://localhost:5173`
 
 ## 🚢 Deployment
 
-### Frontend → Vercel
-```bash
-cd frontend
-npm run build
-# Deploy /dist to Vercel
-```
+### Full Project → Vercel + MongoDB Atlas
+1. Set `MONGODB_URI` and `JWT_SECRET` in Vercel environment variables.
+2. Deploy the repo directly to Vercel.
+3. Vercel serves `index.html`, which opens the standalone app.
+4. Serverless routes in `api/` handle auth and MongoDB-backed data.
 
-`vercel.json`:
-```json
-{
-  "rewrites": [{ "source": "/(.*)", "destination": "/" }]
-}
+### Required Vercel Environment Variables
+```env
+MONGODB_URI=your_mongodb_atlas_connection_string
+JWT_SECRET=your_super_secret_key_at_least_32_chars
 ```
-
-### Backend → Render / Railway
-1. Push backend to GitHub repo
-2. Connect to Render.com → New Web Service
-3. Set environment variables from `.env`
-4. Deploy
 
 ### Database → MongoDB Atlas
 1. Create free cluster at mongodb.com/atlas
 2. Add IP `0.0.0.0/0` in Network Access
-3. Copy connection string to `MONGO_URI`
+3. Copy connection string to `MONGODB_URI`
 
 ---
 
@@ -217,7 +209,7 @@ npm run build
 **Frontend (Full):** React 18 + Vite + Tailwind CSS + Framer Motion + Recharts  
 **Backend:** Node.js + Express + JWT + bcryptjs + Helmet + Rate Limiting  
 **Database:** MongoDB + Mongoose  
-**Deployment:** Vercel (frontend) + Render (backend) + MongoDB Atlas  
+**Deployment:** Vercel + MongoDB Atlas  
 
 ---
 

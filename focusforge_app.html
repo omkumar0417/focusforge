@@ -1040,9 +1040,68 @@ body.light .mobile-header{background:#ffffff}
 
 <script>
 // ===================== DATA STORE =====================
+const API = {
+  request: async (path, { method = 'GET', body, auth = true } = {}) => {
+    const headers = { 'Content-Type': 'application/json' };
+    const token = localStorage.getItem('ff_token');
+    if (auth && token) headers.Authorization = `Bearer ${token}`;
+
+    const response = await fetch(path, {
+      method,
+      headers,
+      body: body === undefined ? undefined : JSON.stringify(body),
+    });
+
+    let payload = {};
+    try { payload = await response.json(); } catch { payload = {}; }
+    if (!response.ok) throw new Error(payload.message || 'Request failed');
+    return payload;
+  }
+};
+
 const DB = {
-  get: (key, def=null) => { try { return JSON.parse(localStorage.getItem('ff_'+key)) ?? def; } catch { return def; } },
-  set: (key, val) => localStorage.setItem('ff_'+key, JSON.stringify(val)),
+  cache: {},
+  loaded: false,
+  async init() {
+    const token = localStorage.getItem('ff_token');
+    if (!token) {
+      this.cache = {};
+      this.loaded = true;
+      return null;
+    }
+    try {
+      const res = await API.request('/api/auth/me');
+      currentUser = res.user;
+      this.cache = res.data || {};
+      this.loaded = true;
+      return res;
+    } catch (err) {
+      localStorage.removeItem('ff_token');
+      this.cache = {};
+      this.loaded = true;
+      throw err;
+    }
+  },
+  get: (key, def = null) => {
+    const val = DB.cache[key];
+    return val === undefined ? def : val;
+  },
+  set: (key, val) => {
+    DB.cache[key] = val;
+    if (localStorage.getItem('ff_token')) {
+      API.request('/api/data', { method: 'PUT', body: { key, value: val } }).catch(console.error);
+    }
+  },
+  setMany: (obj) => {
+    Object.assign(DB.cache, obj);
+    if (localStorage.getItem('ff_token')) {
+      API.request('/api/data', { method: 'PUT', body: { data: obj } }).catch(console.error);
+    }
+  },
+  clear: () => {
+    DB.cache = {};
+    DB.loaded = false;
+  },
 };
 
 // ===================== AUTH =====================
@@ -1087,10 +1146,18 @@ function handleLogin() {
   const pass = document.getElementById('login-pass').value;
   if (!email || !pass) return showAuthError('Please fill all fields.');
   if (pass.length < 6) return showAuthError('Password must be 6+ characters.');
-  const users = DB.get('users', {});
-  if (!users[email]) return showAuthError('No account found. Please sign up.');
-  if (users[email].password !== btoa(pass)) return showAuthError('Incorrect password.');
-  loginUser(users[email]);
+  API.request('/api/auth/login', {
+    method: 'POST',
+    auth: false,
+    body: { email, password: pass }
+  }).then((res) => {
+    localStorage.setItem('ff_token', res.token);
+    DB.cache = res.data || {};
+    if (!DB.get(`tasks_${res.user.email}`, []).length) {
+      generatePredefinedTasks(res.user.email, res.user.startDate || new Date().toISOString().split('T')[0]);
+    }
+    loginUser(res.user);
+  }).catch((err) => showAuthError(err.message));
 }
 
 function handleSignup() {
@@ -1099,41 +1166,54 @@ function handleSignup() {
   const pass = document.getElementById('signup-pass').value;
   if (!name || !email || !pass) return showAuthError('Please fill all fields.');
   if (pass.length < 6) return showAuthError('Password must be 6+ characters.');
-  const users = DB.get('users', {});
-  if (users[email]) return showAuthError('Email already registered. Please sign in.');
-  const user = { id: Date.now(), name, email, password: btoa(pass), streak: 1, longestStreak: 1, startDate: new Date().toISOString().split('T')[0], lastActive: new Date().toISOString().split('T')[0] };
-  users[email] = user;
-  DB.set('users', users);
-  // Auto-generate tasks for this user
-  generatePredefinedTasks(email, user.startDate);
-  loginUser(user);
+  API.request('/api/auth/register', {
+    method: 'POST',
+    auth: false,
+    body: { name, email, password: pass }
+  }).then((res) => {
+    localStorage.setItem('ff_token', res.token);
+    DB.cache = res.data || {};
+    generatePredefinedTasks(res.user.email, res.user.startDate || new Date().toISOString().split('T')[0]);
+    loginUser(res.user);
+  }).catch((err) => showAuthError(err.message));
 }
 
 function loginUser(user) {
-  currentUser = user;
-  DB.set('session', user.email);
   updateStreak(user);
   initApp();
 }
 
 function updateStreak(user) {
-  const users = DB.get('users', {});
+  const updated = { ...user };
   const today = new Date().toISOString().split('T')[0];
-  const yesterday = new Date(Date.now()-86400000).toISOString().split('T')[0];
-  if (user.lastActive === yesterday) {
-    user.streak = (user.streak||0) + 1;
-    if (user.streak > user.longestStreak) user.longestStreak = user.streak;
-  } else if (user.lastActive !== today) {
-    user.streak = 1;
+  const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
+  const lastActive = updated.lastActiveDate ? new Date(updated.lastActiveDate).toISOString().split('T')[0] : null;
+
+  if (lastActive === yesterday) {
+    updated.streak = (updated.streak || 0) + 1;
+    if (updated.streak > (updated.longestStreak || 0)) updated.longestStreak = updated.streak;
+  } else if (lastActive !== today) {
+    updated.streak = 1;
   }
-  user.lastActive = today;
-  users[user.email] = user;
-  DB.set('users', users);
-  currentUser = user;
+
+  updated.lastActiveDate = new Date().toISOString();
+  currentUser = updated;
+
+  if (localStorage.getItem('ff_token')) {
+    API.request('/api/auth/me', {
+      method: 'PUT',
+      body: {
+        streak: updated.streak,
+        longestStreak: updated.longestStreak,
+        lastActiveDate: updated.lastActiveDate,
+      },
+    }).catch(console.error);
+  }
 }
 
 function logout() {
-  DB.set('session', null);
+  localStorage.removeItem('ff_token');
+  DB.clear();
   currentUser = null;
   document.getElementById('auth-screen').style.display = 'flex';
   document.getElementById('app').style.display = 'none';
@@ -2037,10 +2117,11 @@ function updatePhoneLimit() {
   const v = document.getElementById('phone-limit').value;
   document.getElementById('phone-limit-display').textContent = v+' hours';
   if (currentUser) {
-    const users = DB.get('users', {});
-    users[currentUser.email].phoneLimit = Number(v);
     currentUser.phoneLimit = Number(v);
-    DB.set('users', users);
+    API.request('/api/auth/me', {
+      method: 'PUT',
+      body: { phoneLimit: Number(v) }
+    }).catch(console.error);
   }
 }
 
@@ -2138,6 +2219,13 @@ function toggleTheme() {
   document.getElementById('theme-icon').textContent = isLight ? '🌙' : '☀️';
   document.getElementById('theme-label').textContent = isLight ? 'Dark Mode' : 'Light Mode';
   DB.set('theme', isLight?'light':'dark');
+  if (currentUser) {
+    currentUser.theme = isLight ? 'light' : 'dark';
+    API.request('/api/auth/me', {
+      method: 'PUT',
+      body: { theme: isLight ? 'light' : 'dark' }
+    }).catch(console.error);
+  }
 }
 
 // ===================== MODALS =====================
@@ -2229,18 +2317,22 @@ Keep grinding! — FocusForge ⚡
 }
 
 // ===================== STARTUP =====================
-(function init() {
-  // Restore theme
-  if (DB.get('theme')==='light') { document.body.classList.add('light'); document.getElementById('theme-icon').textContent='🌙'; document.getElementById('theme-label').textContent='Dark Mode'; }
-  
+(async function init() {
   // Check session
-  const session = DB.get('session');
-  if (session) {
-    const users = DB.get('users', {});
-    if (users[session]) {
-      loginUser(users[session]);
+  try {
+    await DB.init();
+    // Restore theme from remote cache or local default
+    if (DB.get('theme')==='light') {
+      document.body.classList.add('light');
+      document.getElementById('theme-icon').textContent='🌙';
+      document.getElementById('theme-label').textContent='Dark Mode';
+    }
+    if (currentUser) {
+      loginUser(currentUser);
       return;
     }
+  } catch (err) {
+    console.warn('Session restore failed:', err.message);
   }
   document.getElementById('auth-screen').style.display = 'flex';
 
