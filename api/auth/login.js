@@ -17,6 +17,15 @@ module.exports = async function handler(req, res) {
       return res.status(401).json({ success: false, message: 'Invalid email or password' });
     }
 
+    if (user.emailVerified === false) {
+      return res.status(403).json({
+        success: false,
+        message: 'Email not verified. Please enter the code sent to your inbox.',
+        requiresVerification: true,
+        email: user.email,
+      });
+    }
+
     const today = new Date().toISOString().split('T')[0];
     const lastActive = user.lastActiveDate ? new Date(user.lastActiveDate).toISOString().split('T')[0] : null;
     const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];

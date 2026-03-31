@@ -11,6 +11,10 @@ The `focusforge_app.html` file works **immediately** in any browser — no setup
 - Works offline
 - Mobile-friendly
 
+## 🔐 Email OTP Auth
+
+Signup now sends a 6-digit verification code to the email address you enter. Users must verify that code before they can log in.
+
 ---
 
 ## 🗂️ Project Structure
@@ -36,39 +40,31 @@ focusforge/
 - MongoDB Atlas account (free tier)
 - Git
 
-### 1. Clone & Setup Backend
+### 1. Clone & Install
 
 ```bash
-cd focusforge/backend
 npm install
-
-# Copy and fill .env
-cp .env.example .env
 ```
+
+### 2. Configure Environment
+
+Create a `.env` file in the repo root using `.env.example` as a guide.
 
 Edit `.env`:
 ```env
-PORT=5000
-MONGO_URI=mongodb+srv://<user>:<pass>@cluster0.xxxxx.mongodb.net/focusforge
+MONGODB_URI=mongodb+srv://<user>:<pass>@cluster0.xxxxx.mongodb.net/focusforge
 JWT_SECRET=your_super_secret_key_at_least_32_chars
-FRONTEND_URL=http://localhost:5173
-NODE_ENV=development
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=465
+SMTP_SECURE=true
+SMTP_USER=your_email@example.com
+SMTP_PASS=your_app_password
+SMTP_FROM=FocusForge <your_email@example.com>
 ```
 
-Start backend:
-```bash
-npm run dev
-```
+### 3. Run Locally
 
-### 2. Setup Frontend (React)
-
-```bash
-cd focusforge/frontend
-npm install
-npm run dev
-```
-
-Open `http://localhost:5173`
+Open `focusforge_app.html` directly, or serve the repo root with any static server.
 
 ---
 
@@ -102,6 +98,12 @@ Open `http://localhost:5173`
 ```env
 MONGODB_URI=your_mongodb_atlas_connection_string
 JWT_SECRET=your_super_secret_key_at_least_32_chars
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=465
+SMTP_SECURE=true
+SMTP_USER=your_email@example.com
+SMTP_PASS=your_app_password
+SMTP_FROM=FocusForge <your_email@example.com>
 ```
 
 ### Database → MongoDB Atlas

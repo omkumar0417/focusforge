@@ -26,6 +26,7 @@ module.exports = async function handler(req, res) {
       if (body.streak !== undefined) user.streak = Number(body.streak);
       if (body.longestStreak !== undefined) user.longestStreak = Number(body.longestStreak);
       if (body.lastActiveDate !== undefined) user.lastActiveDate = body.lastActiveDate;
+      if (body.emailVerified !== undefined) user.emailVerified = !!body.emailVerified;
 
       await user.save();
       return res.json({

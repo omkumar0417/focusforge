@@ -88,6 +88,11 @@ body{font-family:'Syne',sans-serif;background:var(--bg);color:var(--text);min-he
 .auth-error{background:rgba(248,113,113,0.1);border:1px solid rgba(248,113,113,0.3);border-radius:8px;padding:10px 14px;font-size:13px;color:var(--red);display:none}
 .auth-footer{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:18px;padding-top:16px;border-top:1px solid var(--border);color:var(--muted2);font-size:12px}
 .auth-footer a{color:var(--accent2);text-decoration:none;font-weight:700}
+.verify-hint{margin:0 0 12px;color:var(--muted2);font-size:13px;line-height:1.6}
+.otp-actions{display:flex;gap:10px;flex-wrap:wrap}
+.otp-actions .btn-primary{flex:1 1 180px}
+.btn-ghost{background:transparent;border:1px solid var(--border);color:var(--text);border-radius:10px;padding:13px 16px;font-family:'Syne',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:all 0.2s}
+.btn-ghost:hover{background:var(--card2)}
 
 /* MAIN APP */
 #app{display:none;height:100vh;overflow:hidden}
@@ -399,6 +404,7 @@ body.light .mobile-header{background:#ffffff}
       <div class="auth-tab">
         <button class="active" onclick="switchAuth('login')">Sign In</button>
         <button onclick="switchAuth('signup')">Sign Up</button>
+        <button onclick="switchAuth('verify')">Verify Email</button>
       </div>
       <div class="auth-error" id="auth-error"></div>
       <div class="auth-form" id="login-form">
@@ -427,6 +433,21 @@ body.light .mobile-header{background:#ffffff}
           <input type="password" id="signup-pass" placeholder="Min 6 characters"/>
         </div>
         <button class="btn-primary" onclick="handleSignup()">Start My 20-Day Journey 🚀</button>
+      </div>
+      <div class="auth-form" id="verify-form" style="display:none">
+        <p class="verify-hint">Enter the 6-digit code we sent to your email. If it is not in your inbox, check spam or resend it below.</p>
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" id="verify-email" placeholder="you@example.com" autocomplete="email"/>
+        </div>
+        <div class="form-group">
+          <label>Verification Code</label>
+          <input type="text" id="verify-code" inputmode="numeric" maxlength="6" placeholder="123456"/>
+        </div>
+        <div class="otp-actions">
+          <button class="btn-primary" onclick="handleVerify()">Verify & Continue</button>
+          <button class="btn-ghost" onclick="handleResendOtp()">Resend OTP</button>
+        </div>
       </div>
       <div class="auth-footer">
         <span>Protected by MongoDB Atlas + JWT</span>
@@ -1201,15 +1222,26 @@ const QUOTES = [
 ];
 
 function switchAuth(mode) {
-  document.querySelectorAll('.auth-tab button').forEach((b,i) => b.classList.toggle('active', (mode==='login'&&i===0)||(mode==='signup'&&i===1)));
+  document.querySelectorAll('.auth-tab button').forEach((b,i) => b.classList.toggle('active', (mode==='login'&&i===0)||(mode==='signup'&&i===1)||(mode==='verify'&&i===2)));
   document.getElementById('login-form').style.display = mode==='login'?'flex':'none';
   document.getElementById('signup-form').style.display = mode==='signup'?'flex':'none';
+  document.getElementById('verify-form').style.display = mode==='verify'?'flex':'none';
   document.getElementById('auth-error').style.display = 'none';
 }
 
 function showAuthError(msg) {
   const el = document.getElementById('auth-error');
   el.textContent = msg; el.style.display = 'block';
+}
+
+function showVerifyFlow(email, message) {
+  switchAuth('verify');
+  if (email) {
+    document.getElementById('verify-email').value = email;
+  }
+  document.getElementById('verify-code').value = '';
+  document.getElementById('verify-code').focus();
+  if (message) toast(message, 'success');
 }
 
 function handleLogin() {
@@ -1228,7 +1260,13 @@ function handleLogin() {
       generatePredefinedTasks(res.user.email, res.user.startDate || new Date().toISOString().split('T')[0]);
     }
     loginUser(res.user);
-  }).catch((err) => showAuthError(err.message));
+  }).catch((err) => {
+    if (err.message && err.message.toLowerCase().includes('verified')) {
+      showVerifyFlow(email, err.message);
+      return;
+    }
+    showAuthError(err.message);
+  });
 }
 
 function handleSignup() {
@@ -1242,10 +1280,38 @@ function handleSignup() {
     auth: false,
     body: { name, email, password: pass }
   }).then((res) => {
+    showVerifyFlow(email, res.message || 'We sent a verification code to your email.');
+  }).catch((err) => showAuthError(err.message));
+}
+
+function handleVerify() {
+  const email = document.getElementById('verify-email').value.trim();
+  const code = document.getElementById('verify-code').value.trim();
+  if (!email || !code) return showAuthError('Enter your email and verification code.');
+  API.request('/api/auth/verify', {
+    method: 'POST',
+    auth: false,
+    body: { email, code }
+  }).then((res) => {
     localStorage.setItem('ff_token', res.token);
     DB.cache = res.data || {};
-    generatePredefinedTasks(res.user.email, res.user.startDate || new Date().toISOString().split('T')[0]);
+    if (!DB.get(`tasks_${res.user.email}`, []).length) {
+      generatePredefinedTasks(res.user.email, res.user.startDate || new Date().toISOString().split('T')[0]);
+    }
     loginUser(res.user);
+    toast('Email verified successfully!', 'success');
+  }).catch((err) => showAuthError(err.message));
+}
+
+function handleResendOtp() {
+  const email = document.getElementById('verify-email').value.trim();
+  if (!email) return showAuthError('Enter your email first.');
+  API.request('/api/auth/resend', {
+    method: 'POST',
+    auth: false,
+    body: { email }
+  }).then((res) => {
+    toast(res.message || 'Verification code resent.', 'success');
   }).catch((err) => showAuthError(err.message));
 }
 
