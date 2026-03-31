@@ -1,5 +1,5 @@
 const connectToDatabase = require('../../lib/mongodb');
-const User = require('../../backend/models/User');
+const User = require('../../models/User');
 const { serializeUser, signToken } = require('../../lib/auth');
 
 module.exports = async function handler(req, res) {

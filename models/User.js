@@ -10,7 +10,7 @@ const userSchema = new mongoose.Schema({
   lastActiveDate: { type: Date, default: null },
   startDate: { type: String, default: null },
   theme: { type: String, default: 'dark' },
-  phoneUsageLimit: { type: Number, default: 2 }, // hours
+  phoneUsageLimit: { type: Number, default: 2 },
   data: { type: mongoose.Schema.Types.Mixed, default: {} },
   createdAt: { type: Date, default: Date.now }
 });
