@@ -122,20 +122,28 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      padding: 12px 16px;
+      min-height: 46px;
+      padding: 12px 18px;
       border-radius: 999px;
       text-decoration: none;
       font-size: 13px;
       font-weight: 800;
+      line-height: 1;
+      letter-spacing: 0.2px;
       transition: transform .2s ease, box-shadow .2s ease, background .2s ease;
       cursor: pointer;
       position: relative;
       z-index: 2;
       pointer-events: auto;
       border: none;
+      outline: none;
       appearance: none;
       -webkit-appearance: none;
       font-family: inherit;
+      user-select: none;
+      white-space: nowrap;
+      box-shadow: 0 10px 26px rgba(60, 40, 66, 0.08);
+      flex: 0 0 auto;
     }
     .chip:hover { transform: translateY(-1px); }
     .chip.primary {
@@ -145,8 +153,12 @@
     }
     .chip.secondary {
       color: var(--text);
-      background: rgba(255,255,255,0.75);
-      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.96);
+      border: 1px solid rgba(235, 218, 228, 0.95);
+    }
+    .chip:focus-visible {
+      box-shadow: 0 0 0 4px rgba(255,122,168,0.18), 0 14px 30px rgba(60,40,66,0.1);
+      transform: translateY(-1px);
     }
     .hero {
       position: relative;
@@ -240,6 +252,11 @@
       margin-bottom: 26px;
       position: relative;
       z-index: 5;
+    }
+    .actions .chip,
+    .nav-actions .chip {
+      min-width: 0;
+      text-align: center;
     }
     .feature-grid {
       display: grid;
@@ -706,8 +723,8 @@
           <div class="brand-name">Focus<span>Forge</span></div>
         </div>
         <div class="nav-actions">
-          <button class="chip secondary" type="button" data-nav="./focusforge_app.html">Open App</button>
-          <button class="chip primary" type="button" data-nav="./focusforge_app.html#signup-form">Get Started</button>
+          <button class="chip secondary" type="button" data-nav="./focusforge_app.html" onclick="window.location.href='./focusforge_app.html'; return false;">Open App</button>
+          <button class="chip primary" type="button" data-nav="./focusforge_app.html#signup-form" onclick="window.location.href='./focusforge_app.html#signup-form'; return false;">Get Started</button>
         </div>
       </header>
 
@@ -722,8 +739,8 @@
               and the vibe soft enough to actually want to open every day.
             </p>
             <div class="actions">
-              <button class="chip primary" type="button" data-nav="./focusforge_app.html">Launch FocusForge</button>
-              <button class="chip secondary" type="button" data-nav="./focusforge_app.html#login-form">Sign In</button>
+              <button class="chip primary" type="button" data-nav="./focusforge_app.html" onclick="window.location.href='./focusforge_app.html'; return false;">Launch FocusForge</button>
+              <button class="chip secondary" type="button" data-nav="./focusforge_app.html#login-form" onclick="window.location.href='./focusforge_app.html#login-form'; return false;">Sign In</button>
             </div>
             <div class="feature-grid">
               <div class="feature">
@@ -822,7 +839,7 @@
 
           <div class="footer">
             <span class="mono">Vercel + MongoDB Atlas</span>
-            <a href="./focusforge_app.html" data-nav="./focusforge_app.html">Go to app →</a>
+            <a href="./focusforge_app.html" data-nav="./focusforge_app.html" onclick="window.location.href='./focusforge_app.html'; return false;">Go to app →</a>
           </div>
         </aside>
       </section>
